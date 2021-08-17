@@ -1,0 +1,39 @@
+.assemblies-page {
+  padding: 25px 0;
+}
+
+.assemblies-detail .assemblies-label {
+  margin-right: 15px;
+  margin-top: 7px;
+}
+
+.assemblies-detail .edit-button {
+  opacity: 0.2;
+  pointer-events: none;
+  transition: opacity 200ms;
+  cursor: pointer;
+}
+
+.assemblies-detail .assemblies-block:hover .edit-button {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.assemblies-detail .assemblies-description p {
+  margin-bottom: 15px;
+}
+
+.assemblies-block.assemblies-sections {
+  padding: 0;
+}
+
+@media screen and (min-width: 769px) {
+  .ballot-modal .modal-card,
+  .ballot-modal .modal-content {
+    width: 990px; 
+  }
+}
+
+.ballot-sections .table {
+  width: 100%;
+}
