@@ -37,3 +37,35 @@
 .ballot-sections .table {
   width: 100%;
 }
+
+.assemblies-sections .modal-card-body .message-body {
+  border: 2px solid #000;
+}
+
+
+.assemblies-sections .modal-card-body .wrapper {
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+}
+
+.message-footer {
+  margin-top: 15px;
+}
+
+.vote-section.is-stale .input,
+.vote-section.is-stale textarea {
+  border: none;
+  background: none;
+  box-shadow: none;
+  pointer-events: none;
+  padding-left: 0;
+  min-height: auto;
+  height: auto;
+}
+
+.vote-section.is-stale table {
+  background: none;
+}
+
+.vote-section.is-stale table .button {
+  display: none;
+}

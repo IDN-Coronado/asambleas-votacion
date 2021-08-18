@@ -3,7 +3,7 @@ import { useParams } from "react-router";
 
 import { useAssembly } from "../../hooks/useAssembly";
 
-import Ballot from "../../components/Ballot/Ballot";
+import VoteSection from "../../components/VoteSection/VoteSection";
 
 const AssemblyDetailPage = () => {
   const assembly = useAssembly();
@@ -17,12 +17,14 @@ const AssemblyDetailPage = () => {
   const [ description, setDescription ] = useState(currentAssembly.current.description);
   const [ initialDate, setInitialDate ] = useState(currentAssembly.current.initialDate);
   const [ endDate, setEndDate ] = useState(currentAssembly.current.initialDate);
+  const [ optionSections, setOptionSection ] = useState(currentAssembly.current.sections);
 
   const setStates = () => {
     setTitle(currentAssembly.current.title);
     setDescription(currentAssembly.current.description);
     setInitialDate(currentAssembly.current.initialDate);
     setEndDate(currentAssembly.current.endDate);
+    setOptionSection(currentAssembly.current.sections)
   }
 
   const onTitleEditToggle = () =>
@@ -45,6 +47,18 @@ const AssemblyDetailPage = () => {
 
   const onEndDateChange = e =>
     setEndDate(e.currentTarget.value);
+  
+  const onCreateOptionSection = () => {
+    setOptionSection(optionSections.concat({}));
+  }
+
+  const onSectionDelete = i => {
+    setOptionSection(optionSections.filter((o, k) => i !== k))
+  }
+
+  const onSectionSave = section => {
+    console.log(section)
+  };
 
   useEffect(() => {
     currentAssembly.current = assembly.get(params.id);
@@ -165,7 +179,32 @@ const AssemblyDetailPage = () => {
               </div>
             </div>
             <div className="block box assemblies-sections assemblies-block">
-              <Ballot />
+              <div className="panel">
+                <header className="panel-heading">
+                  <p className="title is-6">Cédula de votación</p>
+                </header>
+                <section className="modal-card-body">
+                  {optionSections && !!optionSections.length && <div className="message">
+                    {optionSections.map((section, k) => <VoteSection
+                      key={k}
+                      index={k}
+                      onVoteSave={onSectionSave}
+                      onVoteDelete={onSectionDelete}
+                      {...section}
+                    />)}
+                  </div>}
+                  <div className="tile is-parent">
+                    <button className="button tile is-child has-text-left is-light is-info" onClick={onCreateOptionSection}>
+                      <p className="title is-6">
+                      <span>Crear sección</span>
+                      <span className="icon"><i className="fas fa-plus-square"/></span></p>
+                    </button>
+                  </div>
+                </section>
+                <div className="panel-block">
+                  <button className="button is-fullwidth is-primary">Guardar nómina</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
