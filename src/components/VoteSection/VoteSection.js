@@ -8,10 +8,10 @@ const optionTemplate = {
   }]
 }
 
-const VoteSection = ({ id, title, description, options, ...rest }) => {
+const VoteSection = ({ id, title, description, limit, options, ...rest }) => {
   const { onVoteSave, onVoteDelete, index } = rest;
   const [ isDropdownActive, setIsDropdownActive ] = useState(false);
-  const [ section, setSection ] = useState(id ? { id, title, description, options } : optionTemplate);
+  const [ section, setSection ] = useState(id ? { id, title, description, limit, options } : optionTemplate);
   const [ isEditing, setIsEditing ] = useState(false);
   const [ isConfirmDeleteActive, setIsConfirmDeleteActive ] = useState(false);
 
@@ -52,6 +52,15 @@ const VoteSection = ({ id, title, description, options, ...rest }) => {
     setSection(newSection);
   }
 
+  const onLimitChange = e => {
+    const el = e.currentTarget;
+    const type = el.dataset.type;
+    setSection({
+      ...section,
+      [type]: el.selectedIndex,
+    })
+  }
+
   const onEditToggle = () => {
     setIsEditing(!isEditing);
     !isEditing && onDropdownToggle()
@@ -62,15 +71,30 @@ const VoteSection = ({ id, title, description, options, ...rest }) => {
     isConfirmDeleteActive && onDropdownToggle();
   }
 
+  const onCancel = () => {
+    setSection({ id, title, description, limit, options })
+    onEditToggle();
+  }
+
   const onSaveVote = () => {
     onEditToggle();
-    onVoteSave(section)
+    onVoteSave(index, section);
+  }
+
+  const getLimitWord = value => {
+    if (value === 0) {
+      return 'Opción única';
+    }
+    if (section.options.length - 1 === value ) {
+      return 'Todos'
+    }
+    return `${value + 1} de ${section.options.length}`
   }
 
   return <>
     <div className={`block vote-section${!isEditing ? ' is-stale' : ''}`}>
       <div className="message-header">
-        {section.title ? section.title : `Votación ${index + 1}`}
+        {`Votación: ${section.title ? section.title : index + 1}`}
         <div class={`dropdown is-right${isDropdownActive ? ' is-active' : ''}`}>
           <div class="dropdown-trigger">
             <button class="button" aria-haspopup="true" aria-controls="dropdown-menu2" onClick={onDropdownToggle}>
@@ -105,7 +129,7 @@ const VoteSection = ({ id, title, description, options, ...rest }) => {
       <div className="message-body">
         <div className="ballot-sections">
           <div className="columns">
-            <div className="column is-6">
+            <div className="column is-12">
               <div className="block">
                 <div className="field">
                   <label className="label">Título</label>
@@ -122,8 +146,8 @@ const VoteSection = ({ id, title, description, options, ...rest }) => {
               </div>
             </div>
           </div>
-          <div className="columns is-12">
-            <div className="column is-4">
+          <div className="columns">
+            <div className="column is-12">
               <div className="block">
                 <div className="field">
                   <label className="label">Descripción</label>
@@ -145,9 +169,12 @@ const VoteSection = ({ id, title, description, options, ...rest }) => {
               {section.options.length > 1 && <div className="block">
                 <div className="control">
                 <div class="select">
-                  <select>
-                    <option>Opciones a votar</option>
-                    {section.options.map((x, i) => <option>{i + 1}</option>)}
+                  <select
+                    onChange={onLimitChange}
+                    value={section.limit}
+                    data-type="limit"
+                  >
+                    {section.options.map((x, i) => <option key={i} value={i}>{getLimitWord(i)}</option>)}
                   </select>
                 </div>
                 </div>
@@ -167,9 +194,7 @@ const VoteSection = ({ id, title, description, options, ...rest }) => {
                               value={option.title}
                             />
                           </div>
-                          {section.options.length === j + 1 ? <div className="control">
-                            <button className="button is-warning" onClick={onOptionAdd}>Añadir opción</button>
-                          </div> : <div className="control">
+                          {<div className="control">
                             <button className="button is-danger is-light" onClick={() => onOptionDelete(j)}>Remover opción</button>
                           </div>}
                         </div>
@@ -177,12 +202,22 @@ const VoteSection = ({ id, title, description, options, ...rest }) => {
                     </tr>
                   ))}
                 </tbody>
+                <tfoot className="block is-flex is-justify-content-flex-end">
+                  <div className="control">
+                    <button className="button is-warning" onClick={onOptionAdd}>Añadir opción</button>
+                  </div>
+                </tfoot>
               </table>
             </div>
           </div>
         </div>
-        {isEditing && <div className="message-footer block">
-          <button className="button is-fullwidth is-primary is-light is-outlined" onClick={onSaveVote}>Guardar Votación</button>
+        {isEditing && <div className="message-footer block columns">
+          <div className="column is-6">
+            <button className="button is-fullwidth is-warning is-light is-outlined" onClick={onCancel}>Cancelar</button>
+          </div>
+          <div className="column is-6">
+            <button className="button is-fullwidth is-primary is-light is-outlined" onClick={onSaveVote}>Guardar Votación</button>
+          </div>
         </div>}
       </div>
     </div>
@@ -196,7 +231,7 @@ const VoteSection = ({ id, title, description, options, ...rest }) => {
         </header>
         <section className="modal-card-body">
           <div className="columns">
-            <p>¿Estás seguro que deseas borrar esta votación?</p>
+            <p>¿Estás seguro que deseas remover <strong>{`Votación: ${section.title ? section.title : index + 1}`}</strong>?</p>
           </div>
         </section>
         <footer className="modal-card-foot">

@@ -17,14 +17,14 @@ const AssemblyDetailPage = () => {
   const [ description, setDescription ] = useState(currentAssembly.current.description);
   const [ initialDate, setInitialDate ] = useState(currentAssembly.current.initialDate);
   const [ endDate, setEndDate ] = useState(currentAssembly.current.initialDate);
-  const [ optionSections, setOptionSection ] = useState(currentAssembly.current.sections);
+  const [ sections, setSections ] = useState(currentAssembly.current.sections);
 
   const setStates = () => {
     setTitle(currentAssembly.current.title);
     setDescription(currentAssembly.current.description);
     setInitialDate(currentAssembly.current.initialDate);
     setEndDate(currentAssembly.current.endDate);
-    setOptionSection(currentAssembly.current.sections)
+    setSections(currentAssembly.current.sections);
   }
 
   const onTitleEditToggle = () =>
@@ -48,17 +48,14 @@ const AssemblyDetailPage = () => {
   const onEndDateChange = e =>
     setEndDate(e.currentTarget.value);
   
-  const onCreateOptionSection = () => {
-    setOptionSection(optionSections.concat({}));
-  }
+  const onCreateOptionSection = () =>
+    setSections(sections.concat({}));
 
-  const onSectionDelete = i => {
-    setOptionSection(optionSections.filter((o, k) => i !== k))
-  }
+  const onSectionDelete = i =>
+    setSections(sections.filter((o, k) => i !== k))
 
-  const onSectionSave = section => {
-    console.log(section)
-  };
+  const onSectionSave = (index, section) =>
+    setSections([ ...sections ].splice(index, 1, section));
 
   useEffect(() => {
     currentAssembly.current = assembly.get(params.id);
@@ -184,8 +181,8 @@ const AssemblyDetailPage = () => {
                   <p className="title is-6">Cédula de votación</p>
                 </header>
                 <section className="modal-card-body">
-                  {optionSections && !!optionSections.length && <div className="message">
-                    {optionSections.map((section, k) => <VoteSection
+                  {sections && !!sections.length && <div className="message">
+                    {sections.map((section, k) => <VoteSection
                       key={k}
                       index={k}
                       onVoteSave={onSectionSave}

@@ -52,14 +52,19 @@
 }
 
 .vote-section.is-stale .input,
-.vote-section.is-stale textarea {
+.vote-section.is-stale textarea,
+.vote-section.is-stale select {
   border: none;
   background: none;
   box-shadow: none;
   pointer-events: none;
   padding-left: 0;
   min-height: auto;
-  height: auto;
+  resize: none;
+}
+
+.vote-section.is-stale .select:after {
+  display: none !important;
 }
 
 .vote-section.is-stale table {
@@ -68,4 +73,9 @@
 
 .vote-section.is-stale table .button {
   display: none;
+}
+
+tfoot {
+  padding: 10px;
+  display: block;
 }
