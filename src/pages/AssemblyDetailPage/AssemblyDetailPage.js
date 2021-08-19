@@ -13,6 +13,7 @@ const AssemblyDetailPage = () => {
   const [ isEditTitle, setIsEditTitle ] = useState(false);
   const [ isEditDescription, setIsEditDescription ] = useState(false);
   const [ isEditDates, setIsEditDates ] = useState(false);
+  const [ isEditInfo, setIsEditInfo ] = useState(false);
   const [ title, setTitle ] = useState(currentAssembly.current.title);
   const [ description, setDescription ] = useState(currentAssembly.current.description);
   const [ initialDate, setInitialDate ] = useState(currentAssembly.current.initialDate);
@@ -36,8 +37,13 @@ const AssemblyDetailPage = () => {
   const onDatesEditToggle = () =>
     setIsEditDates(!isEditDates);
 
-  const onTitleChange = e =>
-    setTitle(e.currentTarget.value);
+  const onInfoEditToggle = () =>
+    setIsEditInfo(!isEditInfo);
+
+  const onTitleChange = e => {
+    console.log(e.currentTarget.value);
+    return setTitle(e.currentTarget.value);
+  }
 
   const onDescriptionChange = e =>
     setDescription(e.currentTarget.value);
@@ -67,60 +73,65 @@ const AssemblyDetailPage = () => {
       <div className="container">
         <div className="columns">
           <div className="column is-10 is-offset-1">
-            <div className="block box assemblies-title assemblies-block">
-              {!isEditTitle && <h1 className="field is-grouped">
-                <span className="title is-4 assemblies-label">{title}</span>
-                <button className="button is-outlined icon-text has-text-info edit-button" onClick={onTitleEditToggle}>
-                  <span className="has-text-dark">Editar</span>
-                  <span className="icon has-text-dark"><i className="fas fa-pen"></i></span>
-                </button>
-              </h1>}
-              {isEditTitle && <div className="block">
-                <div className="field is-grouped">
-                  <div className="control is-expanded">
-                    <input
-                      className="input"
-                      type="text"
-                      placeholder="Título"
-                      value={title}
-                      onChange={onTitleChange}
-                    />
+            <div className="block box">
+              <div className="block assemblies-title assemblies-block">
+                <div className="columns">
+                  <div className="column is-6">
+                    {!isEditTitle && <div className="field is-grouped is-flex">
+                      <h1 className="title is-4 assemblies-label">{title}</h1>
+                      <button className="button is-outlined icon-text has-text-info edit-button" onClick={onTitleEditToggle}>
+                        <span className="has-text-dark">Editar</span>
+                        <span className="icon has-text-dark"><i className="fas fa-pen"></i></span>
+                      </button>
+                    </div>}
+                    {isEditTitle && <div className="block">
+                      <div className="field is-grouped">
+                        <div className="control is-expanded">
+                          <input
+                            className="input"
+                            type="text"
+                            placeholder="Título"
+                            value={title}
+                            onChange={onTitleChange}
+                          />
+                        </div>
+                        <div className="control">
+                          <button className="button is-primary" onClick={onTitleEditToggle}>
+                            <span>Correcto</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>}
                   </div>
-                  <div className="control">
-                    <button className="button is-primary" onClick={onTitleEditToggle}>
-                      <span>Correcto</span>
-                    </button>
+                  <div className="column is-6">
+                    {!isEditDescription && <div className="field is-flex">
+                      <p className="description assemblies-label">{description}</p>
+                      <button className="button is-outline icon-text has-text-info edit-button" onClick={onDescriptionEditToggle}>
+                        <span className="has-text-dark">Editar</span>
+                        <span className="icon has-text-dark"><i className="fas fa-pen"></i></span>
+                      </button>
+                    </div>}
+                    {isEditDescription && <div className="block">
+                      <div className="field">
+                        <div className="control block">
+                          <textarea
+                            className="textarea"
+                            placeholder="Descripción"
+                            value={description}
+                            onChange={onDescriptionChange}
+                          />
+                        </div>
+                        <div className="control">
+                          <button className="button is-primary" onClick={onDescriptionEditToggle}>
+                            <span>Correcto</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>}
                   </div>
                 </div>
-              </div>}
-            </div>
-            <div className="block box assemblies-description assemblies-block">
-              {!isEditDescription && <h1 className="field">
-                <p className="description assemblies-label">{description}</p>
-                <button className="button is-outline icon-text has-text-info edit-button" onClick={onDescriptionEditToggle}>
-                  <span className="has-text-dark">Editar</span>
-                  <span className="icon has-text-dark"><i className="fas fa-pen"></i></span>
-                </button>
-              </h1>}
-              {isEditDescription && <div className="block">
-                <div className="field">
-                  <div className="control block">
-                    <textarea
-                      className="textarea"
-                      placeholder="Descripción"
-                      value={description}
-                      onChange={onDescriptionChange}
-                    />
-                  </div>
-                  <div className="control">
-                    <button className="button is-primary" onClick={onDescriptionEditToggle}>
-                      <span>Correcto</span>
-                    </button>
-                  </div>
-                </div>
-              </div>}
-            </div>
-            <div className="block box assemblies-dates assemblies-block">
+              </div>
+              <div className="block assemblies-dates assemblies-block">
               <div className="columns">
                 <div className="column is-6">
                   {!isEditDates && <div className="field">
@@ -174,6 +185,7 @@ const AssemblyDetailPage = () => {
                   </div>}
                 </div>
               </div>
+            </div>
             </div>
             <div className="block box assemblies-sections assemblies-block">
               <div className="panel">
