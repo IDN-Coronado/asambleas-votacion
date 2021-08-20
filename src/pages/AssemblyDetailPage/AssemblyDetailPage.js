@@ -10,15 +10,15 @@ const AssemblyDetailPage = () => {
   const assembly = useAssembly();
   const params = useParams();
   let currentAssembly = useRef(assembly.get(params.id));
+  let notificationTimeout;
   
-  const [ isEditTitle, setIsEditTitle ] = useState(false);
-  const [ isEditDescription, setIsEditDescription ] = useState(false);
-  const [ isEditDates, setIsEditDates ] = useState(false);
   const [ title, setTitle ] = useState(currentAssembly.current.title);
   const [ description, setDescription ] = useState(currentAssembly.current.description);
   const [ initialDate, setInitialDate ] = useState(currentAssembly.current.initialDate);
   const [ endDate, setEndDate ] = useState(currentAssembly.current.initialDate);
   const [ sections, setSections ] = useState(currentAssembly.current.sections);
+  const [ isAssemblyUpdated, setIsAssemblyUpdate] = useState(false);
+  const [ isAssemblySaved, setIsAssemblySaved] = useState(false);
 
   const setStates = () => {
     setTitle(currentAssembly.current.title);
@@ -29,19 +29,43 @@ const AssemblyDetailPage = () => {
   }
 
   const onCreateOptionSection = () =>
-    setSections(sections.concat({}));
+    setSections((sections || []).concat({ isNew: true }));
 
   const onSectionDelete = i =>
     setSections(sections.filter((o, k) => i !== k))
 
-  const onSectionSave = (index, section) =>
-    setSections([ ...sections ].splice(index, 1, section));
+  const onSectionSave = (index, section) => {
+    const newSections = [ ...sections ];
+    newSections[index] = section;
+    setSections(newSections);
+    onAssemblyUpdated(true);
+  }
 
   const onInfoSave = (info) => {
     setTitle(info.title);
     setDescription(info.description);
     setInitialDate(info.initialDate);
     setEndDate(info.endDate);
+    onAssemblyUpdated(true);
+  }
+
+  const onAssemblyUpdated = isUpdated =>
+    setIsAssemblyUpdate(isUpdated)
+
+  const onAssemblySaved = isUpdated => {
+    setIsAssemblySaved(true);
+    notificationTimeout && clearTimeout(notificationTimeout);
+    notificationTimeout = setTimeout(() => {
+      setIsAssemblySaved(false);
+    }, 4000);
+  }
+
+  const onSaveAssembly = () => {
+    assembly.update({ ...currentAssembly.current, title, description, initialDate, endDate, sections })
+      .then(() => {
+        onAssemblyUpdated(false);
+        onAssemblySaved(false);
+      })
   }
 
   useEffect(() => {
@@ -50,6 +74,10 @@ const AssemblyDetailPage = () => {
   }, [ assembly, params.id ])
 
   return <>
+    <div className={`notification notification-assembly is-info${isAssemblySaved ? ' is-visible' : ''}`}>
+      <button className="delete" onClick={() => setIsAssemblySaved(false)}></button>
+      Asamblea actualizada
+    </div>
     {currentAssembly && <div className="assemblies-page assemblies-detail">
       <div className="container">
         <div className="columns">
@@ -68,7 +96,7 @@ const AssemblyDetailPage = () => {
                   <p className="title is-6">Cédula de votación</p>
                 </header>
                 <section className="modal-card-body">
-                  {sections && !!sections.length && <div className="message">
+                  {sections && sections.length && <div className="message">
                     {sections.map((section, k) => <VoteSection
                       key={k}
                       index={k}
@@ -86,7 +114,7 @@ const AssemblyDetailPage = () => {
                   </div>
                 </section>
                 <div className="panel-block">
-                  <button className="button is-fullwidth is-primary">Guardar nómina</button>
+                  <button {...!isAssemblyUpdated ? {disabled: true} : ''} className="button is-fullwidth is-primary" onClick={onSaveAssembly}>Guardar nómina</button>
                 </div>
               </div>
             </div>

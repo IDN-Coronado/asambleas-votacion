@@ -73,6 +73,13 @@ export const setCollectionItem = (collection, item) => {
     }))
 }
 
+export const updateCollectionItem = (collection, id, item) => {
+  return getDb()
+    .collection(collection)
+    .doc(id)
+    .set(item, { merge: true })
+}
+
 export const deleteCollectionItem = (collection, id) => {
   return getDb()
     .collection(collection)

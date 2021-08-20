@@ -3,7 +3,12 @@ import React, { useContext, createContext, useState, useEffect } from "react";
 
 import { useAuth } from '../hooks/useAuth';
 
-import { getCollectionByAttribute, deleteCollectionItem, setCollectionItem } from '../lib/firestore'
+import {
+  getCollectionByAttribute,
+  deleteCollectionItem,
+  setCollectionItem,
+  updateCollectionItem
+} from '../lib/firestore'
 
 const assemblyContext = createContext();
 
@@ -58,6 +63,22 @@ function useProvideAssembly() {
     return assemblies.filter(as => as.id === id).shift() || {}
   }
 
+  const update = assembly => {
+    const newAssemblies = [ ...assemblies ];
+    let assemblyIndex;
+    assemblies.forEach((a, i) => {
+      if (a.id === assembly.id) {
+        assemblyIndex = i;
+      }
+    })
+    return updateCollectionItem('assemblies', assembly.id, assembly)
+      .then(() => {
+        newAssemblies[assemblyIndex] = assembly;
+        setAssemblies(newAssemblies);
+        return true;
+      });
+  }
+
   useEffect(() => {
     getAll(auth.user.church)
   }, [ auth ]);
@@ -69,5 +90,6 @@ function useProvideAssembly() {
     get,
     remove,
     create,
+    update,
   };
 }

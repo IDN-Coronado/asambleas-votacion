@@ -3,16 +3,14 @@ import { useState } from "react";
 const optionTemplate = {
   title: '',
   description: '',
-  options: [{
-    title: ""
-  }]
+  options: []
 }
 
-const VoteSection = ({ id, title, description, limit, options, ...rest }) => {
+const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => {
   const { onVoteSave, onVoteDelete, index } = rest;
   const [ isDropdownActive, setIsDropdownActive ] = useState(false);
-  const [ section, setSection ] = useState(id ? { id, title, description, limit, options } : optionTemplate);
-  const [ isEditing, setIsEditing ] = useState(false);
+  const [ section, setSection ] = useState(!isNew ? { title, description, limit, options } : optionTemplate);
+  const [ isEditing, setIsEditing ] = useState(isNew);
   const [ isConfirmDeleteActive, setIsConfirmDeleteActive ] = useState(false);
 
   const onDropdownToggle = () =>
@@ -42,7 +40,7 @@ const VoteSection = ({ id, title, description, limit, options, ...rest }) => {
 
   const onOptionAdd = () => {
     const newSection = { ...section };
-    newSection.options = section.options.concat({ title: '' })
+    newSection.options = (section.options || []).concat({ title: '' })
     setSection(newSection);
   }
 
@@ -72,12 +70,13 @@ const VoteSection = ({ id, title, description, limit, options, ...rest }) => {
   }
 
   const onCancel = () => {
-    setSection({ id, title, description, limit, options })
+    setSection({ title, description, limit, options })
     onEditToggle();
   }
 
   const onSaveVote = () => {
     onEditToggle();
+    delete section.isNew;
     onVoteSave(index, section);
   }
 
@@ -86,42 +85,42 @@ const VoteSection = ({ id, title, description, limit, options, ...rest }) => {
       return 'Opción única';
     }
     if (section.options.length - 1 === value ) {
-      return 'Todos'
+      return 'Todas las opciones'
     }
-    return `${value + 1} de ${section.options.length}`
+    return `Vota ${value + 1} de ${section.options.length} opciones`
   }
 
   return <>
     <div className={`block vote-section${!isEditing ? ' is-stale' : ''}`}>
       <div className="message-header">
         {`Votación: ${section.title ? section.title : index + 1}`}
-        <div class={`dropdown is-right${isDropdownActive ? ' is-active' : ''}`}>
-          <div class="dropdown-trigger">
-            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu2" onClick={onDropdownToggle}>
-              <span class="icon is-small">
-                <i class="fas fa-ellipsis-h" aria-hidden="true"></i>
+        <div className={`dropdown is-right${isDropdownActive ? ' is-active' : ''}`}>
+          <div className="dropdown-trigger">
+            <button className="button" aria-haspopup="true" aria-controls="dropdown-menu2" onClick={onDropdownToggle}>
+              <span className="icon is-small">
+                <i className="fas fa-ellipsis-h" aria-hidden="true"></i>
               </span>
             </button>
           </div>
-          <div class="dropdown-menu" id="dropdown-menu2" role="menu">
-            <div class="dropdown-content">
-              <div class="dropdown-item has-text-right">
-                <button className="button is-fullwidth" onClick={onToggleConfirmDeleteModal}>
-                  <span>Remover</span>
-                  <span class="icon">
-                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
+          <div className="dropdown-menu" id="dropdown-menu2" role="menu">
+            <div className="dropdown-content">
+              <div className="dropdown-item">
+                <button className="button is-fullwidth" onClick={onEditToggle}>
+                  <span>Editar</span>
+                  <span className="icon">
+                    <i className="fas fa-edit" aria-hidden="true"></i>
                   </span>
                 </button>
               </div>
-              {id && !isEditing && <><hr class="dropdown-divider" />
-              <div class="dropdown-item">
-                <button className="button is-fullwidth" onClick={onEditToggle}>
-                  <span>Editar</span>
-                  <span class="icon">
-                    <i class="fas fa-edit" aria-hidden="true"></i>
+              <hr className="dropdown-divider" />
+              <div className="dropdown-item has-text-right">
+                <button className="button is-fullwidth" onClick={onToggleConfirmDeleteModal}>
+                  <span>Remover</span>
+                  <span className="icon">
+                    <i className="fas fa-trash-alt" aria-hidden="true"></i>
                   </span>
                 </button>
-              </div></>}
+              </div>
             </div>
           </div>
         </div>
@@ -166,9 +165,9 @@ const VoteSection = ({ id, title, description, limit, options, ...rest }) => {
           <div className="columns">
             <div className="column is-12">
               <label className="label">Opciones</label>
-              {section.options.length > 1 && <div className="block">
+              {section.options && section.options.length > 1 && <div className="block">
                 <div className="control">
-                <div class="select">
+                <div className="select">
                   <select
                     onChange={onLimitChange}
                     value={section.limit}
@@ -181,7 +180,7 @@ const VoteSection = ({ id, title, description, limit, options, ...rest }) => {
               </div>}
               <table className="table">
                 <tbody>
-                  {section.options.map((option, j) => (
+                  {section.options && section.options.map((option, j) => (
                     <tr key={j}>
                       <td>
                         <div className="field is-grouped">
@@ -203,9 +202,7 @@ const VoteSection = ({ id, title, description, limit, options, ...rest }) => {
                   ))}
                 </tbody>
                 <tfoot className="block is-flex is-justify-content-flex-end">
-                  <div className="control">
-                    <button className="button is-warning" onClick={onOptionAdd}>Añadir opción</button>
-                  </div>
+                  <button className="button is-warning" onClick={onOptionAdd}>Añadir opción</button>
                 </tfoot>
               </table>
             </div>
