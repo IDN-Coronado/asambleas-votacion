@@ -14,19 +14,13 @@ const AssembliesPage = () => {
   const history = useHistory();
 
   const [ isCreateModalActive, setIsCreateModalActive ] = useState(false);
-  const [ isDeleteModalActive, setIsDeleteModalActive ] = useState(false);
   const [ title, setTitle ] = useState('');
   const [ description, setDescription ] = useState('');
   const [ initialDate, setInitialDate ] = useState('');
   const [ endDate, setEndDate ] = useState('');
 
-  const onToggleCreateModal = () => {
+  const onToggleCreateModal = () =>
     setIsCreateModalActive(!isCreateModalActive);
-  }
-
-  const onToggleDeleteModal = () => {
-    setIsDeleteModalActive(!isDeleteModalActive);
-  }
 
   const onCreateAssembly = () => {
     assembly.create({
@@ -43,9 +37,6 @@ const AssembliesPage = () => {
 
   const onDeleteAssembly = id => {
     assembly.remove(id)
-      .then(() => {
-        onToggleDeleteModal();
-      })
   }
 
   const onTitleChange = e => {
@@ -73,8 +64,6 @@ const AssembliesPage = () => {
       <AssemblyTile
         { ...as }
         key={as.id}
-        onToggleModal={onToggleDeleteModal}
-        isModalActive={isDeleteModalActive}
         onDeleteAssembly={onDeleteAssembly}
       />
     ))

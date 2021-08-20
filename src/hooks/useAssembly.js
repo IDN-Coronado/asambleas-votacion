@@ -51,6 +51,9 @@ function useProvideAssembly() {
       church,
       initialDate,
       endDate,
+    }).then(assembly => {
+      setAssemblies(assemblies.concat(assembly))
+      return assembly;
     })
   }
 

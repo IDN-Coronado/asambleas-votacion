@@ -1,16 +1,21 @@
+import { useState } from 'react';
+
 import { Link } from "react-router-dom";
 
-const AssemblyTile = props => {
-  const { id, title, description, onToggleModal } = props;
-  const { isModalActive, onDeleteAssembly } = props;
+const AssemblyTile = ({ id, title, description, onDeleteAssembly }) => {
+  const [ isModalActive, setIsModalActive ] = useState();
 
   const onDelete = () => {
     onDeleteAssembly(id);
+    onToggleModal();
   }
+
+  const onToggleModal = () =>
+    setIsModalActive(!isModalActive);
 
   return (
     <>
-      <div key={id} className="card block is-child has-text-left">
+      <div key={id} data-id={id} data-title={title} className="card block is-child has-text-left">
         <div className="card-content">
           <p className="title is-5">
             <span className="has-text-weight-semibold is-capitalized">{title}</span>
@@ -36,7 +41,7 @@ const AssemblyTile = props => {
             <button className="delete" aria-label="close" onClick={onToggleModal}></button>
           </header>
           <section className="modal-card-body">
-            <p>¿Estás seguro que deseas eliminar esta asamblea?</p>
+            <p>¿Estás seguro que deseas eliminar <strong>"{title}"</strong>?</p>
           </section>
           <footer className="modal-card-foot">
             <button className="button is-success" onClick={onDelete}>Aceptar</button>
