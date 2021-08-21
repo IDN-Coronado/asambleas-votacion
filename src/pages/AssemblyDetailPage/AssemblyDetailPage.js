@@ -7,9 +7,9 @@ import VoteSection from "../../components/VoteSection/VoteSection";
 import AssemblyInfo from "../../components/AssemblyInfo/AssemblyInfo";
 
 const AssemblyDetailPage = () => {
-  const assembly = useAssembly();
+  const assemblyHook = useAssembly();
   const params = useParams();
-  let currentAssembly = useRef(assembly.get(params.id));
+  let currentAssembly = useRef(assemblyHook.get(params.id));
   let notificationTimeout;
   
   const [ title, setTitle ] = useState(currentAssembly.current.title);
@@ -61,7 +61,7 @@ const AssemblyDetailPage = () => {
   }
 
   const onSaveAssembly = () => {
-    assembly.update({ ...currentAssembly.current, title, description, initialDate, endDate, sections })
+    assemblyHook.update({ ...currentAssembly.current, title, description, initialDate, endDate, sections })
       .then(() => {
         onAssemblyUpdated(false);
         onAssemblySaved(false);
@@ -69,9 +69,9 @@ const AssemblyDetailPage = () => {
   }
 
   useEffect(() => {
-    currentAssembly.current = assembly.get(params.id);
+    currentAssembly.current = assemblyHook.get(params.id);
     setStates()
-  }, [ assembly, params.id ])
+  }, [ assemblyHook, params.id ])
 
   return <>
     <div className={`notification notification-assembly is-info${isAssemblySaved ? ' is-visible' : ''}`}>
@@ -96,7 +96,7 @@ const AssemblyDetailPage = () => {
                   <p className="title is-6">Cédula de votación</p>
                 </header>
                 <section className="modal-card-body">
-                  {sections && sections.length && <div className="message">
+                  {!!(sections && sections.length) && <div className="message">
                     {sections.map((section, k) => <VoteSection
                       key={k}
                       index={k}

@@ -9,6 +9,7 @@ import {
 
 import { ProvideAuth, useAuth } from './hooks/useAuth';
 import { ProvideAssembly } from './hooks/useAssembly';
+import { ProvideMember } from './hooks/useMember';
 
 import Nav from './components/Nav/Nav';
 
@@ -47,7 +48,7 @@ export default function App() {
               <ProvideAssembly><AssembliesPage /></ProvideAssembly>
             </PrivateRoute>
             <PrivateRoute path="/miembros">
-              <MembersPage />
+              <ProvideMember><MembersPage /></ProvideMember>
             </PrivateRoute>
           </Switch>
         </div>
