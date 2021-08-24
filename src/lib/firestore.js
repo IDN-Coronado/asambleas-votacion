@@ -9,6 +9,10 @@ const getDb = () => {
   return db;
 }
 
+export const getRef = collection => {
+  return getDb().collection(collection)
+}
+
 export const getCollection = (collection) => {
   return getDb()
     .collection(collection)

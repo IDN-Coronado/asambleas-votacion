@@ -20,6 +20,7 @@ import SignUpPage from "./pages/SignUpPage/SignUpPage";
 import AssembliesPage from "./pages/AssembliesPage/AssembliesPage";
 import AssemblyDetailPage from "./pages/AssemblyDetailPage/AssemblyDetailPage";
 import MembersPage from "./pages/MembersPage/MembersPage";
+import AssemblyMembersPage from "./pages/AssemblyMembersPage/AssemblyMembersPage";
 
 export default function App() {
   return (
@@ -43,6 +44,11 @@ export default function App() {
             </PrivateRoute>
             <PrivateRoute path="/asambleas/:id" exact>
               <ProvideAssembly><AssemblyDetailPage /></ProvideAssembly>
+            </PrivateRoute>
+            <PrivateRoute path="/asambleas/:id/miembros" exact>
+              <ProvideAssembly>
+                <ProvideMember><AssemblyMembersPage /></ProvideMember>
+              </ProvideAssembly>
             </PrivateRoute>
             <PrivateRoute path="/asambleas" exact>
               <ProvideAssembly><AssembliesPage /></ProvideAssembly>

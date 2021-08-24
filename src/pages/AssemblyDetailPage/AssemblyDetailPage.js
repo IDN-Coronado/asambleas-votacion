@@ -82,7 +82,8 @@ const AssemblyDetailPage = () => {
       <div className="container">
         <div className="columns">
           <div className="column is-10 is-offset-1">
-            {title && !!title.length && <AssemblyInfo 
+            {title && !!title.length && <AssemblyInfo
+              id={currentAssembly.current.id}
               onSaveInfo={onInfoSave}
               title={title}
               description={description}
