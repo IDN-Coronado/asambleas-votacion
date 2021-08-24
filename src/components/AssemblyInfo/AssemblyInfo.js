@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-const AssemblyInfo = ({title, description, initialDate, endDate, onSaveInfo}) => {
+import { Link } from 'react-router-dom';
+
+const AssemblyInfo = ({ id, title, description, initialDate, endDate, onSaveInfo }) => {
   const [ isEditInfo, setIsEditInfo ] = useState(false);
   const [ info, setInfo ] = useState({title, description, initialDate, endDate});
   const onInfoEditToggle = () =>
@@ -30,11 +32,17 @@ const AssemblyInfo = ({title, description, initialDate, endDate, onSaveInfo}) =>
   return <>
   <div className="message">
     <header className="message-header assemblies-info-header">
-      Información de Asamblea
-      {!isEditInfo && <button className="button is-light icon-text has-text-info edit-button" onClick={onInfoEditToggle}>
-        <span className="has-text-dark">Editar</span>
-        <span className="icon has-text-dark"><i className="fas fa-pen"></i></span>
-      </button>}
+      <h1>Información de Asamblea</h1>
+      <div>
+        {!isEditInfo && <button className="button is-light icon-text has-text-info edit-button" onClick={onInfoEditToggle}>
+          <span className="has-text-dark">Editar</span>
+          <span className="icon has-text-dark"><i className="fas fa-pen"></i></span>
+        </button>}
+        <Link className="button is-light icon-text has-text-info assembly-members-button" to={`/asambleas/${id}/miembros`}>
+          <span className="has-text-dark">Ver lista de miembros</span>
+          <span className="icon has-text-dark"><i className="fas fa-users"></i></span>
+        </Link>
+      </div>
     </header>
     <div className="block message-body">
       <div className="block assemblies-title assemblies-block">

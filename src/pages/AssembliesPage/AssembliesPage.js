@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useHistory } from "react-router-dom";
 
-import { useAuth } from '../../hooks/useAuth';
 import { useAssembly } from '../../hooks/useAssembly';
 
 import AssemblyTile from '../../components/AssemblyTile/AssemblyTile';
@@ -9,7 +8,6 @@ import AssemblyTile from '../../components/AssemblyTile/AssemblyTile';
 import './AssembliesPage.css';
 
 const AssembliesPage = () => {
-  const auth = useAuth();
   const assembly = useAssembly();
   const history = useHistory();
 
@@ -26,12 +24,11 @@ const AssembliesPage = () => {
     assembly.create({
       title,
       description,
-      church: auth.user.church,
       initialDate,
       endDate,
     })
-      .then(assembly => {
-        history.push(`/asambleas/${assembly.id}`)
+      .then(({ id }) => {
+        history.push(`/asambleas/${id}`)
       })
   }
 

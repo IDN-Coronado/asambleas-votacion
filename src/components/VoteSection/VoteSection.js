@@ -202,7 +202,11 @@ const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => 
                   ))}
                 </tbody>
                 <tfoot className="block is-flex is-justify-content-flex-end">
-                  <button className="button is-warning" onClick={onOptionAdd}>Añadir opción</button>
+                  <tr>
+                    <th>
+                      <button className="button is-warning" onClick={onOptionAdd}>Añadir opción</button>
+                    </th>
+                  </tr>
                 </tfoot>
               </table>
             </div>

@@ -1,20 +1,21 @@
 
+import firebase from "firebase/app";
+
 import React, { useContext, createContext, useState, useEffect } from "react";
 
 import { useAuth } from '../hooks/useAuth';
 
 import {
-  getCollectionByAttribute,
   deleteCollectionItem,
-  setCollectionItem,
-  updateCollectionItem
-} from '../lib/firestore'
+  updateCollectionItem,
+  getRef,
+} from '../lib/firestore';
 
 const assemblyContext = createContext();
 
 export function ProvideAssembly({ children }) {
-  const assembly = useProvideAssembly();
-  return <assemblyContext.Provider value={assembly}>{children}</assemblyContext.Provider>;
+  const assemblyHook = useProvideAssembly();
+  return <assemblyContext.Provider value={assemblyHook}>{children}</assemblyContext.Provider>;
 }
 
 // Hook for child components to get the auth object ...
@@ -28,14 +29,6 @@ function useProvideAssembly() {
   const auth = useAuth();
   const [assemblies, setAssemblies] = useState([]);
 
-  const getAll = churchId => {
-    return getCollectionByAttribute('assemblies', 'church', churchId)
-      .then(data => {
-        setAssemblies(data);
-        return data;
-      })
-  }
-
   const remove = id => {
     return deleteCollectionItem('assemblies', id)
       .then(() => {
@@ -43,23 +36,10 @@ function useProvideAssembly() {
       })
   }
 
-  const create = ({
-    title,
-    description,
-    church,
-    initialDate,
-    endDate,
-  }) => {
-    return setCollectionItem('assemblies', {
-      title,
-      description,
-      church,
-      initialDate,
-      endDate,
-    }).then(assembly => {
-      setAssemblies(assemblies.concat(assembly))
-      return assembly;
-    })
+  const create = (assembly) => {
+    const createAssembly = firebase.functions().httpsCallable('createAssembly');
+    return createAssembly({ ...assembly, church: auth.user.church })
+      .then(data => data.data.payload);
   }
 
   const get = id => {
@@ -83,13 +63,21 @@ function useProvideAssembly() {
   }
 
   useEffect(() => {
-    getAll(auth.user.church)
+    const unsubscribe = getRef('assemblies')
+      .where('church', '==', auth.user.church)
+      .onSnapshot(snapshot => {
+        let _assemblies = [];
+        snapshot.forEach(doc => {
+          _assemblies.push({ id: doc.id, ...doc.data() })
+        })
+        setAssemblies(_assemblies)
+      });
+    return () => unsubscribe();
   }, [ auth ]);
 
   // Return the user object and auth methods
   return {
     assemblies,
-    getAll,
     get,
     remove,
     create,
