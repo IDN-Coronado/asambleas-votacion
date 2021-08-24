@@ -20,6 +20,12 @@ const AssemblyInfo = ({title, description, initialDate, endDate, onSaveInfo}) =>
     onSaveInfo(info);
   };
 
+  const onInfoCancel = () => {
+    console.log(info);
+    onInfoEditToggle();
+    setInfo({title, description, initialDate, endDate, onSaveInfo});
+  };
+
 
   return <>
   <div className="message">
@@ -119,15 +125,20 @@ const AssemblyInfo = ({title, description, initialDate, endDate, onSaveInfo}) =>
             </div>}
           </div>
         </div>
-        <div className="columns">
-          <div className="column is-12">
-            {isEditInfo && <div className="control">
-              <button className="button is-primary" onClick={onInfoSave}>
+        {isEditInfo && <div className="columns">
+          <div className="column is-2">
+            <div className="control">
+              <button className="button is-primary is-fullwidth" onClick={onInfoSave}>
                 <span>Guardar</span>
               </button>
-            </div>}
+            </div>
           </div>
-        </div>
+          <div className="column is-2">
+            <button className="button is-danger is-fullwidth" onClick={onInfoCancel}>
+              <span>Cancelar</span>
+            </button>
+          </div>
+        </div>}
       </div>
     </div>
   </div>
