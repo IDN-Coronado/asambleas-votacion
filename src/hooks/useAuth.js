@@ -2,7 +2,7 @@
 import firebase from "firebase/app";
 import React, { useContext, createContext, useState, useEffect } from "react";
 
-import { registerUser, getCollectionItemByAttribute } from '../lib/firestore';
+import { getRef } from '../lib/firestore';
 
 /** For more details on
  * `authContext`, `ProvideAuth`, `useAuth` and `useProvideAuth`
@@ -26,6 +26,7 @@ export const useAuth = () => {
 // Provider hook that creates auth object and handles state
 function useProvideAuth() {
   const [user, setUser] = useState(null);
+  const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Wrap any Firebase methods we want to use making sure ...
@@ -34,29 +35,23 @@ function useProvideAuth() {
     return firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .then((response) =>
-        updateAuthUserData(response.user)
-      );
+      .then((response) => 'Success');
   };
 
   const signup = (displayName, email, password, church) => {
     return firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
-      .then((response) => {
-        response.user.updateProfile({
-          displayName
-        })
-        return response.user;
-      })
-      .then(user => {
-        registerUser({
+      .then(({ user }) => {
+        const createUser = firebase.functions().httpsCallable('createUser');
+        return createUser({
           uid: user.uid,
           displayName,
           church,
+          email,
         })
-        return updateAuthUserData(user);
-      });
+      }
+      ).then(user => 'Success');
   };
 
   const signout = () => {
@@ -86,34 +81,29 @@ function useProvideAuth() {
       });
   };
 
-  const updateAuthUserData = user =>
-    getCollectionItemByAttribute('users', 'uid', user.uid)
-      .then(_user => {
-        const updatedUser = {
-          ...user,
-          ..._user,
-        }; 
-        setUser(updatedUser);
-        setIsLoading(false);
-        return updatedUser;
-    });
-
-  // Subscribe to user on mount
-  // Because this sets state in the callback it will cause any ...
-  // ... component that utilizes this hook to re-render with the ...
-  // ... latest auth object.
   useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+    let unsubscribeUser;
+    const unsubscribeAuth = firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        updateAuthUserData(user);
+        setUserId(user.uid);
       } else {
-        setUser(false);
-        setIsLoading(false);
+        setUserId(null);
       }
     });
+    if (userId) {
+      unsubscribeUser = getRef('users')
+        .doc(userId)
+        .onSnapshot(doc => {
+          setUser({ id: doc.id, ...doc.data() })
+          setIsLoading(false);
+        });
+    }
     // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, []);
+    return () => {
+      unsubscribeAuth();
+      unsubscribeUser && unsubscribeUser();
+    };
+  }, [ userId ]);
 
   // Return the user object and auth methods
   return {

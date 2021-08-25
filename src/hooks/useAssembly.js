@@ -39,27 +39,17 @@ function useProvideAssembly() {
   const create = (assembly) => {
     const createAssembly = firebase.functions().httpsCallable('createAssembly');
     return createAssembly({ ...assembly, church: auth.user.church })
-      .then(data => data.data.payload);
+      .then(({ data }) => data.payload);
   }
 
   const get = id => {
     return assemblies.filter(as => as.id === id).shift() || {}
   }
 
-  const update = assembly => {
-    const newAssemblies = [ ...assemblies ];
-    let assemblyIndex;
-    assemblies.forEach((a, i) => {
-      if (a.id === assembly.id) {
-        assemblyIndex = i;
-      }
-    })
-    return updateCollectionItem('assemblies', assembly.id, assembly)
-      .then(() => {
-        newAssemblies[assemblyIndex] = assembly;
-        setAssemblies(newAssemblies);
-        return true;
-      });
+  const update = ({id, ...data}) => {
+    const updateAssembly = firebase.functions().httpsCallable('updateAssembly');
+    return updateAssembly({ id, data })
+      .then(({ data }) => data.payload);
   }
 
   useEffect(() => {

@@ -37,7 +37,7 @@ export const getCollectionItem = (collection, id) => {
     .collection(collection)
     .doc(id)
     .get()
-    .then(doc => doc.data())
+    .then(doc => ({ id: doc.id, ...doc.data() }))
 }
 
 export const getCollectionByAttribute = (collection, attr, val) => {
@@ -89,18 +89,4 @@ export const deleteCollectionItem = (collection, id) => {
     .collection(collection)
     .doc(id)
     .delete();
-}
-
-export const registerUser = ({ uid, displayName, church }) => {
-  return getDb()
-    .collection('users')
-    .add({
-      uid,
-      displayName,
-      church,
-    })
-    .then(doc => doc)
-    .catch(err => {
-      throw err;
-    })
 }
