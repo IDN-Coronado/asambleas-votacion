@@ -6,6 +6,8 @@ import { useAssembly } from "../../hooks/useAssembly";
 import VoteSection from "../../components/VoteSection/VoteSection";
 import AssemblyInfo from "../../components/AssemblyInfo/AssemblyInfo";
 
+const NOTIFICATION_TIMEOUT = 4000;
+
 const AssemblyDetailPage = () => {
   const assemblyHook = useAssembly();
   const params = useParams();
@@ -52,12 +54,12 @@ const AssemblyDetailPage = () => {
   const onAssemblyUpdated = isUpdated =>
     setIsAssemblyUpdate(isUpdated)
 
-  const onAssemblySaved = isUpdated => {
+  const onAssemblySaved = () => {
     setIsAssemblySaved(true);
     notificationTimeout && clearTimeout(notificationTimeout);
     notificationTimeout = setTimeout(() => {
       setIsAssemblySaved(false);
-    }, 4000);
+    }, NOTIFICATION_TIMEOUT);
   }
 
   const onSaveAssembly = () => {

@@ -1,14 +1,8 @@
-
 import React, { useContext, createContext, useState, useEffect } from "react";
+import firebase from "@firebase/app";
 
 import { useAuth } from './useAuth';
-
-import {
-  getCollectionByAttribute,
-  deleteCollectionItem,
-  setCollectionItem,
-  updateCollectionItem
-} from '../lib/firestore'
+import { getRef } from '../lib/firestore'
 
 const memberContext = createContext();
 
@@ -26,59 +20,45 @@ export const useMember = () => {
 // Provider hook that creates auth object and handles state
 function useProvideMember() {
   const auth = useAuth();
-  const [members, setMembers] = useState([]);
-
-  const getAll = churchId => {
-    return getCollectionByAttribute('members', 'church', churchId)
-      .then(data => {
-        setMembers(data);
-        return data;
-      })
-  }
+  const [ members, setMembers ] = useState([]);
 
   const remove = id => {
-    return deleteCollectionItem('members', id)
-      .then(() => {
-        setMembers(members.filter(as => !(as.id === id)))
-      })
+    const deleteMember = firebase.functions().httpsCallable('deleteMember');
+    return deleteMember({ id });
   }
 
   const create = (memberData) => {
-    return setCollectionItem('members', memberData)
-      .then(member => {
-        setMembers(members.concat(member))
-        return member;
-      })
+    const createMember = firebase.functions().httpsCallable('createMember');
+    return createMember(memberData)
+      .then(({ data }) => data.payload);
   }
 
   const get = id => {
     return members.filter(as => as.id === id).shift() || {}
   }
 
-  const update = member => {
-    const newMembers = [ ...members ];
-    let memberIndex;
-    members.forEach((a, i) => {
-      if (a.id === member.id) {
-        memberIndex = i;
-      }
-    })
-    return updateCollectionItem('members', member.id, member)
-      .then(() => {
-        newMembers[memberIndex] = member;
-        setMembers(newMembers);
-        return true;
-      });
+  const update = ({ id, ...data }) => {
+    const createMember = firebase.functions().httpsCallable('createMember');
+    return createMember({ id, data })
+      .then(({ data }) => data.payload);
   }
 
   useEffect(() => {
-    getAll(auth.user.church)
+    const unsubscribe = getRef('members')
+      .where('church', '==', auth.user.church)
+      .onSnapshot(snapshot => {
+        let _members = [];
+        snapshot.forEach(doc => {
+          _members.push({ id: doc.id, ...doc.data() })
+        })
+        setMembers(_members)
+      });
+    return () => unsubscribe();
   }, [ auth ]);
 
   // Return the user object and auth methods
   return {
     members,
-    getAll,
     get,
     remove,
     create,

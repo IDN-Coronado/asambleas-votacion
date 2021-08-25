@@ -30,6 +30,9 @@ const MembersPage = () => {
       .then(() => setMemberData(memberTemplate))
   }
 
+  const onMemberDelete = id =>
+    memberHook.remove(id)
+
   return <div className="members-page">
     <div className="container">
       <h2 className="title">Agregar nuevo miembro</h2>
@@ -125,6 +128,7 @@ const MembersPage = () => {
                   <th>Teléfono</th>
                   <th>Email</th>
                   <th>Fecha de nacimiento</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -134,6 +138,13 @@ const MembersPage = () => {
                     <td>{member.phone || '---'}</td>
                     <td>{member.email || '---'}</td>
                     <td>{member.birthday || '---'}</td>
+                    <td>
+                      <button className="button is-small" onClick={() => onMemberDelete(member.id)}>
+                        <span className="icon is-small">
+                          <i className="fas fa-trash"></i>
+                        </span>
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
