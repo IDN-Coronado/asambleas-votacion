@@ -6,6 +6,7 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
+import { createBrowserHistory } from "history";
 
 import { ProvideAuth, useAuth } from './hooks/useAuth';
 import { ProvideAssembly } from './hooks/useAssembly';
@@ -14,34 +15,43 @@ import { ProvideMember } from './hooks/useMember';
 import Nav from './components/Nav/Nav';
 
 import HomePage from './pages/HomePage/HomePage';
-import DashboardPage from './pages/DashboardPage/DashboardPage';
 import LoginPage from "./pages/LoginPage/LoginPage";
 import SignUpPage from "./pages/SignUpPage/SignUpPage";
 import AssembliesPage from "./pages/AssembliesPage/AssembliesPage";
 import AssemblyDetailPage from "./pages/AssemblyDetailPage/AssemblyDetailPage";
 import MembersPage from "./pages/MembersPage/MembersPage";
 import AssemblyMembersPage from "./pages/AssemblyMembersPage/AssemblyMembersPage";
+import VotingPage from "./pages/VotingPage/VotingPage";
+
+const customHistory = createBrowserHistory();
+const headlessPages = [
+  /\/votacion\/[\w\d]+\/[\w\d]+/
+];
+
+const isHeadlessPage = location =>
+  headlessPages.map(regex => regex.test(location)).length
 
 export default function App() {
+  const isHeadless = isHeadlessPage(customHistory.location.pathname);
   return (
     <ProvideAuth>
       <Router>
         <div>
-          <Nav />
+          {!isHeadless && <Nav />}
 
           <Switch>
             <Route path="/" exact>
               <HomePage />
             </Route>
-            <PublicRoute path="/acceso">
+            <Route path="/votacion/:asambleaId/:miembroId" exact>
+              <VotingPage />
+            </Route>
+            <PublicRoute path="/acceso" exact>
               <LoginPage />
             </PublicRoute>
-            <PublicRoute path="/registro">
+            <PublicRoute path="/registro" exact>
               <SignUpPage />
             </PublicRoute>
-            <PrivateRoute path="/panel">
-              <DashboardPage />
-            </PrivateRoute>
             <PrivateRoute path="/asambleas/:id" exact>
               <ProvideAssembly><AssemblyDetailPage /></ProvideAssembly>
             </PrivateRoute>
@@ -53,7 +63,7 @@ export default function App() {
             <PrivateRoute path="/asambleas" exact>
               <ProvideAssembly><AssembliesPage /></ProvideAssembly>
             </PrivateRoute>
-            <PrivateRoute path="/miembros">
+            <PrivateRoute path="/miembros" exact>
               <ProvideMember><MembersPage /></ProvideMember>
             </PrivateRoute>
           </Switch>
