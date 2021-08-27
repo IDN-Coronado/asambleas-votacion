@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 import { useAuth } from '../../hooks/useAuth';
 
@@ -36,8 +36,8 @@ const Nav = () => {
 			</div>
 			<div id="navbarBasicExample" className={`navbar-menu${isActive ? ' is-active' : ''}`}>
 				<div className="navbar-start">
-					<Link className="navbar-item" to="/asambleas">Asambleas</Link>
-					<Link className="navbar-item" to="/miembros">Miembros</Link>
+					<NavLink className="navbar-item" to="/asambleas">Asambleas</NavLink>
+					<NavLink className="navbar-item" to="/miembros">Miembros</NavLink>
 				</div>
 
 				<div className="navbar-end">

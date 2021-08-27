@@ -68,7 +68,7 @@ const SignUpPage = () => {
 		if (!validate()) return;
 		setLoading(true);
 		auth.signup(displayName, email, password, church)
-			.then(user => {
+			.then(() => {
 				clearForm();
 				setLoading(false);
 				history.replace(from);

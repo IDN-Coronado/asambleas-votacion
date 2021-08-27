@@ -35,6 +35,10 @@
   width: 100%;
 }
 
+.ballot-sections tfoot th {
+  border: none;
+}
+
 .assemblies-sections .modal-card-body .message-body {
   border: 2px solid #000;
 }

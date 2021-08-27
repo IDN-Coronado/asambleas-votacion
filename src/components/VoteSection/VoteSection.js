@@ -1,15 +1,18 @@
 import { useState } from "react";
 
-const optionTemplate = {
+import uid from "../../utils/uid";
+
+const getOptionTemplate = () => ({
+  id: uid(),
   title: '',
   description: '',
   options: []
-}
+})
 
 const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => {
   const { onVoteSave, onVoteDelete, index } = rest;
   const [ isDropdownActive, setIsDropdownActive ] = useState(false);
-  const [ section, setSection ] = useState(!isNew ? { title, description, limit, options } : optionTemplate);
+  const [ section, setSection ] = useState(!isNew ? { title, description, limit, options } : getOptionTemplate());
   const [ isEditing, setIsEditing ] = useState(isNew);
   const [ isConfirmDeleteActive, setIsConfirmDeleteActive ] = useState(false);
 
@@ -40,7 +43,7 @@ const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => 
 
   const onOptionAdd = () => {
     const newSection = { ...section };
-    newSection.options = (section.options || []).concat({ title: '' })
+    newSection.options = (section.options || []).concat({ id: uid(), title: '', votes: [] });
     setSection(newSection);
   }
 

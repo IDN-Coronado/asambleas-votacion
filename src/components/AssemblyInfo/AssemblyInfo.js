@@ -23,7 +23,6 @@ const AssemblyInfo = ({ id, title, description, initialDate, endDate, onSaveInfo
   };
 
   const onInfoCancel = () => {
-    console.log(info);
     onInfoEditToggle();
     setInfo({title, description, initialDate, endDate, onSaveInfo});
   };

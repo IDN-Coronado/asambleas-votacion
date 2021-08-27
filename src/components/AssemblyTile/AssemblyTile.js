@@ -26,7 +26,7 @@ const AssemblyTile = ({ id, title, description, onDeleteAssembly }) => {
         </div>
         <div className="card-footer">
           <Link to={`/asambleas/${id}`} className="card-footer-item button is-light is-primary">
-            <span>Editar</span>
+            <span>Ver</span>
           </Link>
           <button className="card-footer-item button is-light is-danger" onClick={onToggleModal}>
             <span>Eliminar</span>
