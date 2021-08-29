@@ -16,10 +16,18 @@ const AssemblyMembersPage = () => {
     setAssembly(assemblyHook.get(params.id));
   }, [ assemblyHook, params.id ])
 
-  return assembly ? <div className="container">
+  return assembly ? <div className="container assemly-members-page">
     <div className="columns">
       <div className="column is-12">
-        <h1>Lista de miembors para <strong>{assembly.title}</strong></h1>
+        <div className="block is-flex is-justify-content-space-between">
+          <h1 className="title is-5">Lista de miembors para {assembly.title}</h1>
+          <Link className="button is-info" to={`/asambleas/${assembly.id}`}>
+            <span class="icon">
+              <i class="fa fa-arrow-alt-circle-left"></i>
+            </span>
+            <span>Volver a la asamblea</span>
+          </Link>
+        </div>
       </div>
     </div>
     <div className="columns">

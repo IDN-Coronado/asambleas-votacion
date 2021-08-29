@@ -5,6 +5,7 @@ import { useAssembly } from "../../hooks/useAssembly";
 
 import VoteSection from "../../components/VoteSection/VoteSection";
 import AssemblyInfo from "../../components/AssemblyInfo/AssemblyInfo";
+import uid from "../../utils/uid";
 
 const NOTIFICATION_TIMEOUT = 4000;
 
@@ -30,8 +31,8 @@ const AssemblyDetailPage = () => {
     setSections(currentAssembly.current.sections);
   }
 
-  const onCreateOptionSection = () =>
-    setSections((sections || []).concat({ isNew: true }));
+  const onCreateSection = () =>
+    setSections((sections || []).concat({ isNew: true, id: uid() }));
 
   const onSectionDelete = i =>
     setSections(sections.filter((o, k) => i !== k))
@@ -109,7 +110,7 @@ const AssemblyDetailPage = () => {
                     />)}
                   </div>}
                   <div className="tile is-parent">
-                    <button className="button tile is-child has-text-left is-light is-info" onClick={onCreateOptionSection}>
+                    <button className="button tile is-child has-text-left is-light is-info" onClick={onCreateSection}>
                       <p className="title is-6">
                       <span>Crear sección</span>
                       <span className="icon"><i className="fas fa-plus-square"/></span></p>

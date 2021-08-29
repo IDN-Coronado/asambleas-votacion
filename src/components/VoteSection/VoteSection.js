@@ -31,7 +31,7 @@ const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => 
   const onOptionChange = (value, optionIndex) => {
     const options = section.options.map((op, k) => {
       if (k === optionIndex) {
-        return { title: value };
+        return { ...section.options[k], title: value };
       }
       return op;
     })
@@ -42,7 +42,10 @@ const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => 
   }
 
   const onOptionAdd = () => {
-    const newSection = { ...section };
+    const newSection = { ...section, limit: (section.options || []).length > 0
+      ? (typeof section.limit === 'number' ? section.limit : 0)
+      : null
+    };
     newSection.options = (section.options || []).concat({ id: uid(), title: '', votes: [] });
     setSection(newSection);
   }
@@ -80,6 +83,7 @@ const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => 
   const onSaveVote = () => {
     onEditToggle();
     delete section.isNew;
+    section.id = section.id || uid();
     onVoteSave(index, section);
   }
 

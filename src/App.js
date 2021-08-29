@@ -6,7 +6,6 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
-import { createBrowserHistory } from "history";
 
 import { ProvideAuth, useAuth } from './hooks/useAuth';
 import { ProvideAssembly } from './hooks/useAssembly';
@@ -23,27 +22,20 @@ import MembersPage from "./pages/MembersPage/MembersPage";
 import AssemblyMembersPage from "./pages/AssemblyMembersPage/AssemblyMembersPage";
 import VotingPage from "./pages/VotingPage/VotingPage";
 
-const customHistory = createBrowserHistory();
-const headlessPages = [
-  /\/votacion\/[\w\d]+\/[\w\d]+/
-];
-
-const isHeadlessPage = location =>
-  headlessPages.map(regex => regex.test(location)).length
+import './App.css';
 
 export default function App() {
-  const isHeadless = isHeadlessPage(customHistory.location.pathname);
   return (
     <ProvideAuth>
       <Router>
         <div>
-          {!isHeadless && <Nav />}
+          <Nav />
 
           <Switch>
             <Route path="/" exact>
               <HomePage />
             </Route>
-            <Route path="/votacion/:asambleaId/:miembroId" exact>
+            <Route path="/votacion/:assemblyId/:memberId" exact>
               <VotingPage />
             </Route>
             <PublicRoute path="/acceso" exact>

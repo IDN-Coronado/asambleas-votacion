@@ -92,3 +92,7 @@ tfoot {
 .notification.notification-assembly.is-visible {
   bottom: 0;
 }
+
+.assemly-members-page {
+  padding-top: 20px;
+}

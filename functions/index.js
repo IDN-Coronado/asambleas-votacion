@@ -111,3 +111,70 @@ exports.deleteMember = functions.https.onCall((data, context) => {
   }
   return admin.firestore().collection('members').doc(data.id).delete();
 });
+
+// ****************
+// VOTING
+// ****************
+
+exports.getVoting = functions.https.onCall((data) => {
+  const { assemblyId, memberId } = data;
+  if (!assemblyId || !memberId) {
+    throw new functions.https.HttpsError(
+      'invalid-argument',
+      'Invalid or missing arguments'
+    );
+  }
+  let assembly;
+  return admin.firestore().collection('votes').doc(memberId).get()
+    .then(doc => {
+      let item = doc.data();
+      if (!doc || !item || (item && !item.hasVoted)) {
+        return admin.firestore().collection('assemblies').doc(assemblyId).get();
+      }
+      throw new functions.https.HttpsError(
+        'aborted',
+        'User already voted'
+      );
+    })
+    .then(doc => {
+      assembly = { id: doc.id, ...doc.data()}
+      const now = new Date();
+      const initialDate = new Date(assembly.initialDate);
+      const endDate = new Date(assembly.endDate);
+      if (now >= initialDate && now < endDate) {
+        return admin.firestore().collection('members').doc(memberId).get()
+      }
+      throw new functions.https.HttpsError(
+        'aborted',
+        'Assembly expired'
+      ); 
+    })
+    .then(doc => {
+      const member = { id: doc.id, ...doc.data()}
+      return { payload: { assembly, member }}
+    })
+    .catch(error => {
+      throw new functions.https.HttpsError(
+        'internal',
+        error.message
+      );
+    })
+});
+
+exports.vote = functions.https.onCall((data) => {
+  const { assemblyId, memberId, sectionVotes } = data;
+  return admin.firestore().collection('assemblies').doc(assemblyId).get()
+    .then(doc => {
+      const assembly = doc.data();
+      assembly.sections.forEach(section => {
+        section.options.forEach(option => {
+          if (sectionVotes[section.id].includes(option.id)) {
+            option.votes.push(memberId);
+          }
+        })
+      })
+      return admin.firestore().collection('assemblies').doc(assemblyId).set(assembly, { merge: true });
+    })
+    .then(() => admin.firestore().collection('votes').doc(memberId).set({ hasVoted: true }, { merge: true }))
+    .then(() => ({ message: 'Vote success'}))
+});

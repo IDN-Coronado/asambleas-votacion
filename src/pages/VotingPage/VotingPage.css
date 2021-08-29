@@ -1,0 +1,38 @@
+.voting-page:not(.has-background) {
+  padding-top: 20px;
+}
+
+.empty {
+  background-size: cover;
+  height: 100vh;
+  background-repeat: no-repeat;
+  background-position: right top;
+}
+
+.options input[type="radio"],
+.options input[type="checkbox"] {
+  display: none;
+}
+
+.voting-page .options {
+  margin-top: 20px;
+}
+
+.options label {
+  margin: 0 10px 10px 0;
+  display: inline-block;
+}
+
+.options input[type="radio"]:checked + .button,
+.options input[type="checkbox"]:checked + .button {
+  background-color: #48c78e;
+  color: white;
+}
+
+.voting-page .options .button {
+  min-width: 100px;
+}
+
+.voting-page .options .button:last-child {
+  margin-right: 0;
+}
