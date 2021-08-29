@@ -88,6 +88,7 @@ function useProvideAuth() {
         setUserId(user.uid);
       } else {
         setUserId(null);
+        setIsLoading(false);
       }
     });
     if (userId) {

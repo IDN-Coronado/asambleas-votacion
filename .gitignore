@@ -22,8 +22,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+yarn-clock.json
 
 #firebase
 .runtimeconfig.json
+.firebase
 firestore-debug.log
 ui-debug.log

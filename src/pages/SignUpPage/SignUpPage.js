@@ -126,7 +126,7 @@ const SignUpPage = () => {
 					</div>
 					<div className="block">
 						<div className="field">
-							<label className="label">Password</label>
+							<label className="label">Contraseña</label>
 							<div className="control">
 								<input
 									className="input"
