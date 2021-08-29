@@ -10,6 +10,7 @@ import {
 import { ProvideAuth, useAuth } from './hooks/useAuth';
 import { ProvideAssembly } from './hooks/useAssembly';
 import { ProvideMember } from './hooks/useMember';
+import { ProvideVotes } from "./hooks/useVotes"; 
 
 import Nav from './components/Nav/Nav';
 
@@ -21,6 +22,7 @@ import AssemblyDetailPage from "./pages/AssemblyDetailPage/AssemblyDetailPage";
 import MembersPage from "./pages/MembersPage/MembersPage";
 import AssemblyMembersPage from "./pages/AssemblyMembersPage/AssemblyMembersPage";
 import VotingPage from "./pages/VotingPage/VotingPage";
+import ResultsPage from "./pages/ResultsPage/ResultsPage";
 
 import './App.css';
 
@@ -49,7 +51,16 @@ export default function App() {
             </PrivateRoute>
             <PrivateRoute path="/asambleas/:id/miembros" exact>
               <ProvideAssembly>
-                <ProvideMember><AssemblyMembersPage /></ProvideMember>
+                <ProvideMember>
+                  <ProvideVotes><AssemblyMembersPage /></ProvideVotes>
+                </ProvideMember>
+              </ProvideAssembly>
+            </PrivateRoute>
+            <PrivateRoute path="/resultados/:assemblyId" exact>
+              <ProvideAssembly>
+                <ProvideMember>
+                  <ProvideVotes><ResultsPage /></ProvideVotes>
+                </ProvideMember>
               </ProvideAssembly>
             </PrivateRoute>
             <PrivateRoute path="/asambleas" exact>

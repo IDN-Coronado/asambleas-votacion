@@ -37,6 +37,10 @@ const AssemblyInfo = ({ id, title, description, initialDate, endDate, onSaveInfo
           <span className="has-text-dark">Editar</span>
           <span className="icon has-text-dark"><i className="fas fa-pen"></i></span>
         </button>}
+        <Link className="button is-light icon-text has-text-info assembly-members-button" to={`/resultados/${id}`}>
+          <span className="has-text-dark">Resultados</span>
+          <span className="icon has-text-dark"><i className="fas fa-poll"></i></span>
+        </Link>
         <Link className="button is-light icon-text has-text-info assembly-members-button" to={`/asambleas/${id}/miembros`}>
           <span className="has-text-dark">Ver lista de miembros</span>
           <span className="icon has-text-dark"><i className="fas fa-users"></i></span>

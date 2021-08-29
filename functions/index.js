@@ -163,9 +163,11 @@ exports.getVoting = functions.https.onCall((data) => {
 
 exports.vote = functions.https.onCall((data) => {
   const { assemblyId, memberId, sectionVotes } = data;
+  let church;
   return admin.firestore().collection('assemblies').doc(assemblyId).get()
     .then(doc => {
       const assembly = doc.data();
+      church = assembly.church;
       assembly.sections.forEach(section => {
         section.options.forEach(option => {
           if (sectionVotes[section.id].includes(option.id)) {
@@ -175,6 +177,6 @@ exports.vote = functions.https.onCall((data) => {
       })
       return admin.firestore().collection('assemblies').doc(assemblyId).set(assembly, { merge: true });
     })
-    .then(() => admin.firestore().collection('votes').doc(memberId).set({ hasVoted: true }, { merge: true }))
+    .then(() => admin.firestore().collection('votes').doc(memberId).set({ hasVoted: true, church: church }, { merge: true }))
     .then(() => ({ message: 'Vote success'}))
 });

@@ -80,14 +80,14 @@ const VotingPage = () => {
       <div className="container">
         <div className="columns">
           <div className="column is-10 is-offset-1">
-            <div className="message">
+            <div className="message is-primary">
               <header className="message-header">
                 <h1 className="title has-text-light is-5">Hola {pageData.member.name}</h1>
               </header>
               <div className="block message-body">
                 <div className="block">
                   <h2 className="subtitle is-6"><strong>{pageData.assembly.title}</strong></h2>
-                  <p>{pageData.assembly.description}</p>
+                  <p className="has-text-dark">{pageData.assembly.description}</p>
                 </div>
               </div>
             </div>

@@ -1,16 +1,24 @@
 import { useState, useEffect } from "react";
-import { useAssembly } from "../../hooks/useAssembly";
-import { useMember } from "../../hooks/useMember";
 import { useParams } from "react-router";
 
 import { Link } from "react-router-dom";
 
+import { useAssembly } from "../../hooks/useAssembly";
+import { useMember } from "../../hooks/useMember";
+import { useVotes } from "../../hooks/useVotes";
+
 const AssemblyMembersPage = () => {
   const assemblyHook = useAssembly();
   const memberHook = useMember();
+  const votesHook = useVotes();
   const params = useParams();
 
-  const [ assembly, setAssembly ] = useState({})
+  const [ assembly, setAssembly ] = useState({});
+
+  const getVotedStatus = memberId => {
+    const vote = votesHook.votes.filter(vote => vote.id === memberId).shift();
+    return vote && vote.hasVoted;
+  }
 
   useEffect(() => {
     setAssembly(assemblyHook.get(params.id));
@@ -37,6 +45,7 @@ const AssemblyMembersPage = () => {
             <tr>
               <th>Nombre</th>
               <th>Link de votación</th>
+              <th>Voto</th>
             </tr>
           </thead>
           <tbody>
@@ -49,6 +58,14 @@ const AssemblyMembersPage = () => {
                       {`${window.location.protocol}://${window.location.host}/${`votacion/${assembly.id}/${member.id}`}`}
                     </Link>
                   </td>
+                  <td>{getVotedStatus(member.id) ? 
+                    <span class="icon has-text-success">
+                      <i class="fa fa-check-circle"></i>
+                    </span> :
+                    <span class="icon has-text-danger">
+                      <i class="fa fa-times-circle"></i>
+                    </span>
+                  }</td>
                 </tr>
               ))
             }
