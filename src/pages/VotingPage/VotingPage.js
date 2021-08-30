@@ -110,7 +110,7 @@ const VotingPage = () => {
         </div>
       </div>
     : <div className="empty" style={{
-      backgroundImage: `url('${process.env.PUBLIC_URL}/images/${getErrorImage()}.jpeg')`
+      backgroundImage: `url('/images/${getErrorImage()}.jpeg')`
     }}>
       <section className="container hero">
         <div className="hero-body">
