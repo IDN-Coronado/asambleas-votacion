@@ -12,6 +12,7 @@ const VotingPage = () => {
   const [ pageData, setPageData ] = useState();
   const [ pageError, setPageError ] = useState();
   const [ isLoading, setIsLoading ] = useState(true);
+  const [ isLoadingScreen, setIsLoadingScreen ] = useState(false);
   const [ isModalActive, setIsModalActive ] = useState(false);
   const [ sectionVotes, setSectionVotes ] = useState({})
 
@@ -25,11 +26,15 @@ const VotingPage = () => {
   const onToggleModal = () => setIsModalActive(!isModalActive);
 
   const onFinalizeVote = () => {
+    setIsLoadingScreen(true);
+    setIsLoading(true);
     const vote = firebase.functions().httpsCallable('vote');
     vote({ assemblyId, memberId, sectionVotes })
       .then(() => {
         setPageError('voted')
         onToggleModal();
+        setIsLoadingScreen(false);
+        setIsLoading(false);
       })
   }
 
@@ -77,7 +82,7 @@ const VotingPage = () => {
   }, [assemblyId, memberId]);
 
   return <div className={`voting-page${pageError ? ' has-background' : ''}`}>
-    {isLoading ? <Spinner /> : !pageError ?
+    {isLoading ? <Spinner { ...isLoadingScreen ? { screen: true } : {}} /> : !pageError ?
       <div className="container">
         <div className="columns">
           <div className="column is-10 is-offset-1">
