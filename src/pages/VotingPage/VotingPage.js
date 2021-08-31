@@ -5,6 +5,7 @@ import firebase from "firebase/app";
 import Vote from "../../components/Vote/Vote";
 
 import "./VotingPage.css";
+import Spinner from "../../components/Spinner/Spinner";
 
 const VotingPage = () => {
   const { assemblyId, memberId } = useParams();
@@ -76,7 +77,7 @@ const VotingPage = () => {
   }, [assemblyId, memberId]);
 
   return <div className={`voting-page${pageError ? ' has-background' : ''}`}>
-    {isLoading ? <div>Loading</div> : !pageError ?
+    {isLoading ? <Spinner /> : !pageError ?
       <div className="container">
         <div className="columns">
           <div className="column is-10 is-offset-1">

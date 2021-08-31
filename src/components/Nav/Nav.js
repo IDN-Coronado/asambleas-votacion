@@ -20,6 +20,7 @@ const Nav = () => {
 
 	useEffect(() => {
 		setIsActive(false);
+    document.querySelector('body').classList.remove('headless');
 	}, [location])
 
 	return <nav className="navbar is-dark navbar is-fixed-top" role="navigation" aria-label="main navigation">
