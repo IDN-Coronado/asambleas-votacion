@@ -163,11 +163,9 @@ exports.getVoting = functions.https.onCall((data) => {
 
 exports.vote = functions.https.onCall((data) => {
   const { assemblyId, memberId, sectionVotes } = data;
-  let church;
   return admin.firestore().collection('assemblies').doc(assemblyId).get()
     .then(doc => {
       const assembly = doc.data();
-      church = assembly.church;
       assembly.sections.forEach(section => {
         section.options.forEach(option => {
           if (sectionVotes[section.id].includes(option.id)) {
@@ -175,8 +173,55 @@ exports.vote = functions.https.onCall((data) => {
           }
         })
       })
+      assembly.votes.push(memberId);
       return admin.firestore().collection('assemblies').doc(assemblyId).set(assembly, { merge: true });
     })
-    .then(() => admin.firestore().collection('votes').doc(memberId).set({ hasVoted: true, church: church }, { merge: true }))
     .then(() => ({ message: 'Vote success'}))
+});
+
+// ****************
+// URLS
+// ****************
+
+exports.onAddMember = functions.firestore.document('members/{member}').onCreate((snapMember) => {
+  const memberData = snapMember.data();
+  return admin.firestore().collection('assemblies').where('church', '==', memberData.church).get()
+    .then(doc => {
+      let item = [];
+      doc.forEach(assemblySnap => {
+        admin.firestore().collection('urls').doc().set({
+          url: `https://idn-asambleas.web.app/votacion/${assemblySnap.id}/${snapMember.id}`,
+          memberId: snapMember.id,
+          assemblyId: assemblySnap.id
+        })
+      })
+      return item;
+    })
+});
+
+exports.onAddAssembly = functions.firestore.document('assemblies/{assembly}').onCreate((assemblySnap) => {
+  const assembliesData = assemblySnap.data();
+  return admin.firestore().collection('members').where('church', '==', assembliesData.church).get()
+    .then(doc => {
+      let item = [];
+      doc.forEach(memberSnap => {
+        admin.firestore().collection('urls').doc().set({
+          url: `https://idn-asambleas.web.app/votacion/${assemblySnap.id}/${memberSnap.id}`,
+          memberId: memberSnap.id,
+          assemblyId: assemblySnap.id
+        })
+      })
+      return item;
+    })
+});
+
+exports.onUpdateUrl = functions.firestore.document('urls/{member}').onUpdate((change) => {
+  const urlsData = change.after.data();
+  if (urlsData.memberId) {
+    return admin.firestore().collection('members').doc(urlsData.memberId).set({
+      urls: {
+        [urlsData.assemblyId]: urlsData.shortUrl
+      }
+    }, { merge: true })
+  }
 });

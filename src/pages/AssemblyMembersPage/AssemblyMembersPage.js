@@ -1,40 +1,45 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import { useAssembly } from "../../hooks/useAssembly";
 import { useMember } from "../../hooks/useMember";
-import { useVotes } from "../../hooks/useVotes";
 
 const AssemblyMembersPage = () => {
   const assemblyHook = useAssembly();
   const memberHook = useMember();
-  const votesHook = useVotes();
   const params = useParams();
+  const history = useHistory();
 
   const [ assembly, setAssembly ] = useState({});
 
-  const getVotedStatus = memberId => {
-    const vote = votesHook.votes.filter(vote => vote.id === memberId).shift();
-    return vote && vote.hasVoted;
+  const getVotedStatus = memberId => assembly.votes.includes(memberId);
+
+  const goBack = () =>
+    history.goBack();
+
+  const getMemberVotingUrl = member => {
+    const localUrl = `${window.location.protocol}://${window.location.host}/${`votacion/${assembly.id}/${member.id}`}`;
+    return member.urls ? member.urls[assembly.id] : localUrl;
+      
   }
 
   useEffect(() => {
     setAssembly(assemblyHook.get(params.id));
   }, [ assemblyHook, params.id ])
 
-  return assembly ? <div className="container assemly-members-page">
+  return assembly.id ? <div className="container assemly-members-page">
     <div className="columns">
       <div className="column is-12">
         <div className="block is-flex is-justify-content-space-between">
-          <h1 className="title is-5">Lista de miembors para {assembly.title}</h1>
-          <Link className="button is-info" to={`/asambleas/${assembly.id}`}>
-            <span class="icon">
-              <i class="fa fa-arrow-alt-circle-left"></i>
+          <h1 className="title is-5">Lista de miembros para {assembly.title}</h1>
+          <button className="button is-info" onClick={goBack}>
+            <span className="icon">
+              <i className="fa fa-arrow-alt-circle-left"></i>
             </span>
             <span>Volver a la asamblea</span>
-          </Link>
+          </button>
         </div>
       </div>
     </div>
@@ -54,16 +59,16 @@ const AssemblyMembersPage = () => {
                 <tr key={member.id}>
                   <td>{member.name}</td>
                   <td>
-                    <Link to={`/votacion/${assembly.id}/${member.id}`}>
-                      {`${window.location.protocol}://${window.location.host}/${`votacion/${assembly.id}/${member.id}`}`}
-                    </Link>
+                    <a href={getMemberVotingUrl(member)} target="_blank" rel="noreferrer">
+                      {getMemberVotingUrl(member)}
+                    </a>
                   </td>
                   <td>{getVotedStatus(member.id) ? 
-                    <span class="icon has-text-success">
-                      <i class="fa fa-check-circle"></i>
+                    <span className="icon has-text-success">
+                      <i className="fa fa-check-circle"></i>
                     </span> :
-                    <span class="icon has-text-danger">
-                      <i class="fa fa-times-circle"></i>
+                    <span className="icon has-text-danger">
+                      <i className="fa fa-times-circle"></i>
                     </span>
                   }</td>
                 </tr>

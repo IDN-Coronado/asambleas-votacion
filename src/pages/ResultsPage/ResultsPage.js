@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import { useAssembly } from "../../hooks/useAssembly";
 import { useMember } from "../../hooks/useMember";
-import { useVotes } from "../../hooks/useVotes";
 
 import './ResultsPage.css';
 
 const ResultsPage = () => {
   const assemblyHook = useAssembly();
   const memberHook = useMember();
-  const votesHook = useVotes();
   const params = useParams();
+  const history = useHistory();
 
-  const [ assembly, setAssembly ] = useState({})
+  const [ assembly, setAssembly ] = useState({});
+
+  const goBack = () =>
+    history.goBack();
 
   useEffect(() => {
     setAssembly(assemblyHook.get(params.assemblyId));
@@ -28,12 +30,12 @@ const ResultsPage = () => {
             <h1 className="title is-5">{assembly.title}</h1>
             <p className="subtitle is-6">{assembly.description}</p>
           </div>
-          <Link className="button is-info" to={`/asambleas/${assembly.id}`}>
-            <span class="icon">
-              <i class="fa fa-arrow-alt-circle-left"></i>
+          <button className="button is-info" onClick={goBack}>
+            <span className="icon">
+              <i className="fa fa-arrow-alt-circle-left"></i>
             </span>
             <span>Volver a la asamblea</span>
-          </Link>
+          </button>
         </div>
         <div className="block general-info">
           <div className="level">
@@ -46,13 +48,13 @@ const ResultsPage = () => {
             <div className="level-item has-text-centered">
               <div>
                 <p className="heading">Total de votos realizados</p>
-                <p className="title">{votesHook.votes.length}</p>
+                <p className="title">{assembly.votes.length}</p>
               </div>
             </div>
             <div className="level-item has-text-centered">
               <div>
                 <p className="heading">Porcentaje de votos realizados</p>
-                <p className="title">{votesHook.votes.length / memberHook.members.length * 100}%</p>
+                <p className="title">{assembly.votes.length / memberHook.members.length * 100}%</p>
               </div>
             </div>
           </div>
@@ -62,7 +64,7 @@ const ResultsPage = () => {
     <div className="columns">
       <div className="column">
         <div className="block">
-          {assembly.sections.map(section => (
+          {assembly?.sections?.map(section => (
             <div className="message" key={section.id}>
               <div className="message-header">
                 <p>{section.title}{section.options.length === 1 ? `: ${section.options[0].title}` : ''}</p>
@@ -72,7 +74,7 @@ const ResultsPage = () => {
                   ? <div>
                       <div className="level">
                         {section.options.map(option => (
-                          <div className="level-item has-text-centered">
+                          <div className="level-item has-text-centered" key={option.id}>
                             <div>
                               <p className="heading">{option.title}</p>
                               <p className="title is-5">{option.votes.length}</p>
@@ -92,7 +94,7 @@ const ResultsPage = () => {
                         <div className="level-item has-text-centered">
                           <div>
                             <p className="heading">No</p>
-                            <p className="title is-5">{votesHook.votes.length - section.options[0].votes.length}</p>
+                            <p className="title is-5">{assembly.votes.length - section.options[0].votes.length}</p>
                           </div>
                         </div>
                       </div>

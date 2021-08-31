@@ -29,7 +29,7 @@ function useProvideAssembly() {
 
   const create = (assembly) => {
     const createAssembly = firebase.functions().httpsCallable('createAssembly');
-    return createAssembly({ ...assembly, church: auth.user.church })
+    return createAssembly({ ...assembly, church: auth.user.church, votes: [] })
       .then(({ data }) => data.payload);
   }
 
