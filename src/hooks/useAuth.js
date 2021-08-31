@@ -2,7 +2,8 @@
 import firebase from "firebase/app";
 import React, { useContext, createContext, useState, useEffect } from "react";
 
-import { getRef } from '../lib/firestore';
+import { getCollectionItem, getRef } from '../lib/firestore';
+import usePrevious from "./usePrevious";
 
 /** For more details on
  * `authContext`, `ProvideAuth`, `useAuth` and `useProvideAuth`
@@ -26,8 +27,10 @@ export const useAuth = () => {
 // Provider hook that creates auth object and handles state
 function useProvideAuth() {
   const [user, setUser] = useState(null);
+  const [church, setChurch] = useState(null);
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const prevUser = usePrevious(user);
 
   // Wrap any Firebase methods we want to use making sure ...
   // ... to save the user to state.
@@ -82,33 +85,41 @@ function useProvideAuth() {
   };
 
   useEffect(() => {
-    let unsubscribeUser;
-    const unsubscribeAuth = firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        setUserId(user.uid);
-      } else {
-        setUserId(null);
-        setIsLoading(false);
-      }
-    });
-    if (userId) {
-      unsubscribeUser = getRef('users')
-        .doc(userId)
-        .onSnapshot(doc => {
-          setUser({ id: doc.id, ...doc.data() })
+    let unsubscribeUser, unsubscribeAuth;
+    if (!prevUser) {
+      unsubscribeAuth = firebase.auth().onAuthStateChanged((_user) => {
+        if (_user) {
+          setUserId(_user.uid);
+        } else {
+          setUserId(null);
           setIsLoading(false);
-        });
+        }
+      });
+      if (userId) {
+        unsubscribeUser = getRef('users')
+          .doc(userId)
+          .onSnapshot(doc => {
+            setUser({ id: doc.id, ...doc.data() })
+            setIsLoading(false);
+          })
+      }
+    }
+    if (user && prevUser?.church !== user.church) {
+      getCollectionItem('churches', user.church)
+        .then(_church => setChurch(_church))
     }
     // Cleanup subscription on unmount
     return () => {
       unsubscribeAuth();
       unsubscribeUser && unsubscribeUser();
     };
-  }, [ userId ]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ userId, user ]);
 
   // Return the user object and auth methods
   return {
     user,
+    church,
     isLoading,
     signin,
     signup,

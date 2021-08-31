@@ -13,6 +13,7 @@ import { ProvideMember } from './hooks/useMember';
 import { ProvideVotes } from "./hooks/useVotes"; 
 
 import Nav from './components/Nav/Nav';
+import Spinner from "./components/Spinner/Spinner";
 
 import HomePage from './pages/HomePage/HomePage';
 import LoginPage from "./pages/LoginPage/LoginPage";
@@ -23,6 +24,7 @@ import MembersPage from "./pages/MembersPage/MembersPage";
 import AssemblyMembersPage from "./pages/AssemblyMembersPage/AssemblyMembersPage";
 import VotingPage from "./pages/VotingPage/VotingPage";
 import ResultsPage from "./pages/ResultsPage/ResultsPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 
 import './App.css';
 
@@ -69,6 +71,9 @@ export default function App() {
             <PrivateRoute path="/miembros" exact>
               <ProvideMember><MembersPage /></ProvideMember>
             </PrivateRoute>
+            <PrivateRoute path="/perfil" exact>
+              <ProfilePage />
+            </PrivateRoute>
           </Switch>
         </div>
       </Router>
@@ -83,7 +88,7 @@ function PublicRoute({ children, ...rest }) {
       {...rest}
       render={({ location }) =>
         auth.isLoading ? (
-          <div>Loading...</div>
+          <Spinner />
         )
         : (!auth.isLoading && auth.user) ? (
           <Redirect
@@ -108,7 +113,7 @@ function PrivateRoute({ children, ...rest }) {
       {...rest}
       render={({ location }) =>
         auth.isLoading ? (
-          <div>Loading...</div>
+          <Spinner />
         ) : 
         auth.user ? (
           children

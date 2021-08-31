@@ -5,6 +5,8 @@ import { useAssembly } from "../../hooks/useAssembly";
 
 import VoteSection from "../../components/VoteSection/VoteSection";
 import AssemblyInfo from "../../components/AssemblyInfo/AssemblyInfo";
+import Spinner from "../../components/Spinner/Spinner";
+
 import uid from "../../utils/uid";
 
 const NOTIFICATION_TIMEOUT = 4000;
@@ -20,8 +22,9 @@ const AssemblyDetailPage = () => {
   const [ initialDate, setInitialDate ] = useState(currentAssembly.current.initialDate);
   const [ endDate, setEndDate ] = useState(currentAssembly.current.initialDate);
   const [ sections, setSections ] = useState(currentAssembly.current.sections);
-  const [ isAssemblyUpdated, setIsAssemblyUpdate] = useState(false);
-  const [ isAssemblySaved, setIsAssemblySaved] = useState(false);
+  const [ isAssemblyUpdated, setIsAssemblyUpdate ] = useState(false);
+  const [ isAssemblySaved, setIsAssemblySaved ] = useState(false);
+  const [ isLoading, setIsLoading ] = useState(false);
 
   const setStates = () => {
     setTitle(currentAssembly.current.title);
@@ -39,9 +42,14 @@ const AssemblyDetailPage = () => {
 
   const onSectionSave = (index, section) => {
     const newSections = [ ...sections ];
+    newSections.id = newSections.id || uid();
     newSections[index] = section;
     setSections(newSections);
     onAssemblyUpdated(true);
+  }
+
+  const onSectionCancel = index => {
+    setSections(sections.filter((s, i) => i !== index));
   }
 
   const onInfoSave = (info) => {
@@ -64,10 +72,12 @@ const AssemblyDetailPage = () => {
   }
 
   const onSaveAssembly = () => {
+    setIsLoading(true);
     assemblyHook.update({ ...currentAssembly.current, title, description, initialDate, endDate, sections })
       .then(() => {
         onAssemblyUpdated(false);
         onAssemblySaved(false);
+        setIsLoading(false);
       })
   }
 
@@ -77,6 +87,7 @@ const AssemblyDetailPage = () => {
   }, [ assemblyHook, params.id ])
 
   return <>
+    {isLoading && <Spinner screen />}
     <div className={`notification notification-assembly is-info${isAssemblySaved ? ' is-visible' : ''}`}>
       <button className="delete" onClick={() => setIsAssemblySaved(false)}></button>
       Asamblea actualizada
@@ -106,6 +117,7 @@ const AssemblyDetailPage = () => {
                       index={k}
                       onVoteSave={onSectionSave}
                       onVoteDelete={onSectionDelete}
+                      onVoteCancel={onSectionCancel}
                       {...section}
                     />)}
                   </div>}

@@ -10,7 +10,7 @@ const getOptionTemplate = () => ({
 })
 
 const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => {
-  const { onVoteSave, onVoteDelete, index } = rest;
+  const { onVoteSave, onVoteDelete, onVoteCancel, index } = rest;
   const [ isDropdownActive, setIsDropdownActive ] = useState(false);
   const [ section, setSection ] = useState(!isNew ? { title, description, limit, options } : getOptionTemplate());
   const [ isEditing, setIsEditing ] = useState(isNew);
@@ -45,6 +45,7 @@ const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => 
     const newSection = { ...section, limit: (section.options || []).length > 0
       ? (typeof section.limit === 'number' ? section.limit : 0)
       : null
+    
     };
     newSection.options = (section.options || []).concat({ id: uid(), title: '', votes: [] });
     setSection(newSection);
@@ -76,7 +77,8 @@ const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => 
   }
 
   const onCancel = () => {
-    setSection({ title, description, limit, options })
+    setSection({ title, description, limit, options });
+    onVoteCancel(index);
     onEditToggle();
   }
 

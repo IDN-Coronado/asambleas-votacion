@@ -1,0 +1,17 @@
+.navbar .profile button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.navbar .profile .button .icon i {
+  font-size: 2rem;
+}
+
+.navbar .profile .profile-info {
+  margin: 0 15px 4px 0;
+}
+
+.navbar .profile .profile-church {
+  line-height: 11px;
+}

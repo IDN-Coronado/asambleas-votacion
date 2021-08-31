@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 import { useAssembly } from '../../hooks/useAssembly';
 
 import AssemblyTile from '../../components/AssemblyTile/AssemblyTile';
+import Spinner from '../../components/Spinner/Spinner';
 
 import './AssembliesPage.css';
 
@@ -12,6 +13,7 @@ const AssembliesPage = () => {
   const history = useHistory();
 
   const [ isCreateModalActive, setIsCreateModalActive ] = useState(false);
+  const [ isLoading, setIsLoading ] = useState(false);
   const [ title, setTitle ] = useState('');
   const [ description, setDescription ] = useState('');
   const [ initialDate, setInitialDate ] = useState('');
@@ -21,6 +23,8 @@ const AssembliesPage = () => {
     setIsCreateModalActive(!isCreateModalActive);
 
   const onCreateAssembly = () => {
+    onToggleCreateModal();
+    setIsLoading(true);
     assembly.create({
       title,
       description,
@@ -28,12 +32,17 @@ const AssembliesPage = () => {
       endDate,
     })
       .then(({ id }) => {
+        setIsLoading(false);
         history.push(`/asambleas/${id}`)
       })
   }
 
   const onDeleteAssembly = id => {
+    setIsLoading(true);
     assembly.remove(id)
+      .then(() => {
+        setIsLoading(false);
+      })
   }
 
   const onTitleChange = e => {
@@ -66,99 +75,102 @@ const AssembliesPage = () => {
     ))
   )
 
-  return <div className="assemblies-page">
-    <div className="container">
-      <div className="block">
-        <h1 className="title">Asambleas</h1>
-        <p>Administra las asambleas de tu iglesia.</p>
+  return <>
+    {isLoading && <Spinner screen />}
+    <div className="assemblies-page">
+      <div className="container">
+        <div className="block">
+          <h1 className="title">Asambleas</h1>
+          <p>Administra las asambleas de tu iglesia.</p>
+        </div>
+        <div className="tile is-vertical is-parent">
+          <button className="button tile is-child is-primary has-text-left" onClick={onToggleCreateModal}>
+            <p className="title is-6 has-text-light">
+            <span>Nueva Asamblea</span>
+            <span className="icon"><i className="fas fa-plus-square"/></span></p>
+          </button>
+          {renderTiles()}
+        </div>
       </div>
-      <div className="tile is-vertical is-parent">
-        <button className="button tile is-child is-primary has-text-left" onClick={onToggleCreateModal}>
-          <p className="title is-6 has-text-light">
-          <span>Nueva Asamblea</span>
-          <span className="icon"><i className="fas fa-plus-square"/></span></p>
-        </button>
-        {renderTiles()}
-      </div>
-    </div>
-    <div className={`modal${isCreateModalActive ? ' is-active' : ''}`}>
-      <div className="modal-background"></div>
-      <div className="modal-card">
-        <header className="modal-card-head">
-          <p className="modal-card-title">Modal title</p>
-          <button className="delete" aria-label="close" onClick={onToggleCreateModal}></button>
-        </header>
-        <section className="modal-card-body">
-          <div className="columns">
-            <div className="column is-half">
-              <div className="block">
-                <div className="field">
-                  <label className="label">Título</label>
-                  <div className="control">
-                    <input
-                      className="input"
-                      type="text"
-                      placeholder="Título"
-                      value={title}
-                      onChange={onTitleChange}
-                    />
+      <div className={`modal${isCreateModalActive ? ' is-active' : ''}`}>
+        <div className="modal-background"></div>
+        <div className="modal-card">
+          <header className="modal-card-head">
+            <p className="modal-card-title">Modal title</p>
+            <button className="delete" aria-label="close" onClick={onToggleCreateModal}></button>
+          </header>
+          <section className="modal-card-body">
+            <div className="columns">
+              <div className="column is-half">
+                <div className="block">
+                  <div className="field">
+                    <label className="label">Título</label>
+                    <div className="control">
+                      <input
+                        className="input"
+                        type="text"
+                        placeholder="Título"
+                        value={title}
+                        onChange={onTitleChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="block">
+                  <div className="field">
+                    <label className="label">Descripción</label>
+                    <div className="control">
+                      <textarea
+                        rows="5"
+                        className="textarea"
+                        placeholder="Descripción"
+                        value={description}
+                        onChange={onDescriptionChange}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="block">
-                <div className="field">
-                  <label className="label">Descripción</label>
-                  <div className="control">
-                    <textarea
-                      rows="5"
-                      className="textarea"
-                      placeholder="Descripción"
-                      value={description}
-                      onChange={onDescriptionChange}
-                    />
+              <div className="column is-half">
+                <div className="block">
+                  <div className="field">
+                    <label className="label">Fecha Inicial</label>
+                    <div className="control">
+                      <input
+                        className="input"
+                        type="datetime-local"
+                        placeholder="Fecha Inicial"
+                        value={initialDate}
+                        onChange={onInitialDateChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="block">
+                  <div className="field">
+                    <label className="label">Fecha Final</label>
+                    <div className="control">
+                      <input
+                        className="input"
+                        type="datetime-local"
+                        placeholder="Fecha Final"
+                        value={endDate}
+                        onChange={onEndDateChange}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="column is-half">
-              <div className="block">
-                <div className="field">
-                  <label className="label">Fecha Inicial</label>
-                  <div className="control">
-                    <input
-                      className="input"
-                      type="datetime-local"
-                      placeholder="Fecha Inicial"
-                      value={initialDate}
-                      onChange={onInitialDateChange}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="block">
-                <div className="field">
-                  <label className="label">Fecha Final</label>
-                  <div className="control">
-                    <input
-                      className="input"
-                      type="datetime-local"
-                      placeholder="Fecha Final"
-                      value={endDate}
-                      onChange={onEndDateChange}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        <footer className="modal-card-foot">
-          <button className="button is-success" onClick={onCreateAssembly}>Crear Asamblea</button>
-          <button className="button" onClick={onToggleCreateModal}>Cancelar</button>
-        </footer>
+          </section>
+          <footer className="modal-card-foot">
+            <button className="button is-success" onClick={onCreateAssembly}>Crear Asamblea</button>
+            <button className="button" onClick={onToggleCreateModal}>Cancelar</button>
+          </footer>
+        </div>
       </div>
     </div>
-  </div>;
+  </>
 }
 
 export default AssembliesPage;
