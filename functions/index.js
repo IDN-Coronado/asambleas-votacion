@@ -1,5 +1,11 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const twilio = require('twilio');
+
+const TWILIO_ACCOUNT_SID = functions.config().twilio.account_sid;
+const TWILIO_AUTH_TOKEN = functions.config().twilio.auth_token;
+const TWILIO_SMS_SID = functions.config().twilio.sms_sid;
+const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
 admin.initializeApp();
 
@@ -215,6 +221,10 @@ exports.onAddAssembly = functions.firestore.document('assemblies/{assembly}').on
     })
 });
 
+// ****************
+// NOTIFICATIONS
+// ****************
+
 exports.onUpdateUrl = functions.firestore.document('urls/{member}').onUpdate((change) => {
   const urlsData = change.after.data();
   if (urlsData.memberId) {
@@ -224,4 +234,60 @@ exports.onUpdateUrl = functions.firestore.document('urls/{member}').onUpdate((ch
       }
     }, { merge: true })
   }
+});
+
+exports.sendWhatsappMessage = functions.https.onCall((data, context) => {
+  if (!context.auth) {
+    throw unauthenticationError;
+  }
+  return admin.firestore().collection('members').doc(data.memberId).get()
+    .then(doc => {
+      const member = doc.data();
+      if (!member.phone) {
+        throw new functions.https.HttpsError(
+          'internal',
+          'User does not have phone number'
+        );
+      }
+      return twilioClient.messages.create({
+        from: 'whatsapp:+14155238886',
+        to: `whatsapp:${member.phone}`,
+        body: `${data.messge ? data.message : `Llegó la hora de votar. Puedes hacerlo en este link: ${member.urls[data.assemblyId]}`}`
+      })
+    })
+    .then(message => message.sid)
+    .catch(error => {
+      throw new functions.https.HttpsError(
+        'internal',
+        error.message
+      );
+    })
+});
+
+exports.sendSMSMessage = functions.https.onCall((data, context) => {
+  if (!context.auth) {
+    throw unauthenticationError;
+  }
+  return admin.firestore().collection('members').doc(data.memberId).get()
+    .then(doc => {
+      const member = doc.data();
+      if (!member.phone) {
+        throw new functions.https.HttpsError(
+          'internal',
+          'User does not have phone number'
+        );
+      }
+      return twilioClient.messages.create({
+        messagingServiceSid: TWILIO_SMS_SID,
+        to: `${member.phone}`,
+        body: `${data.messge ? data.message : `Somos la Iglesia del Nazareno de Coronado. Llegó la hora de votar. Puedes hacerlo en este link: ${member.urls[data.assemblyId]}`}`
+      })
+    })
+    .then(message => message.sid)
+    .catch(error => {
+      throw new functions.https.HttpsError(
+        'internal',
+        error.message
+      );
+    })
 });

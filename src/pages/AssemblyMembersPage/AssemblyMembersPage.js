@@ -1,3 +1,4 @@
+import firebase from "firebase/app";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 
@@ -20,9 +21,18 @@ const AssemblyMembersPage = () => {
     history.goBack();
 
   const getMemberVotingUrl = member => {
-    const localUrl = `${window.location.protocol}://${window.location.host}/${`votacion/${assembly.id}/${member.id}`}`;
-    return member.urls ? member.urls[assembly.id] : localUrl;
+    const localUrl = `${window.location.protocol}//${window.location.host}/${`votacion/${assembly.id}/${member.id}`}`;
+    return member.urls ? member.urls[assembly.id] ? member.urls[assembly.id] : localUrl : localUrl;
       
+  }
+
+  const sendMessage = member => {
+    const sendSMSMessage = firebase.functions().httpsCallable('sendSMSMessage');
+    sendSMSMessage({
+      assemblyId: assembly.id,
+      memberId: member.id,
+      message: `Hola *${member.name}*. Ya puedes realizar tu voto haciendo click aquí: ${member.urls[assembly.id]}`
+    })
   }
 
   useEffect(() => {
@@ -51,6 +61,7 @@ const AssemblyMembersPage = () => {
               <th>Nombre</th>
               <th>Link de votación</th>
               <th>Voto</th>
+              <th>Enviar Mensaje</th>
             </tr>
           </thead>
           <tbody>
@@ -63,7 +74,7 @@ const AssemblyMembersPage = () => {
                       {getMemberVotingUrl(member)}
                     </a>
                   </td>
-                  <td>{getVotedStatus(member.id) ? 
+                  <td className="has-text-centered">{getVotedStatus(member.id) ? 
                     <span className="icon has-text-success">
                       <i className="fa fa-check-circle"></i>
                     </span> :
@@ -71,6 +82,9 @@ const AssemblyMembersPage = () => {
                       <i className="fa fa-times-circle"></i>
                     </span>
                   }</td>
+                  <td>
+                    <button className="button" onClick={() => sendMessage(member)}>Enviar</button>
+                  </td>
                 </tr>
               ))
             }

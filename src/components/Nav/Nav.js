@@ -43,13 +43,13 @@ const Nav = () => {
 				</button>
 			</div>
 			<div id="navbarBasicExample" className={`navbar-menu${isActive ? ' is-active' : ''}`}>
-				<div className="navbar-start">
+			{auth.user && <div className="navbar-start">
 					<NavLink className="navbar-item" to="/asambleas">Asambleas</NavLink>
 					<NavLink className="navbar-item" to="/miembros">Miembros</NavLink>
 					<hr className="dropdown-divider is-hidden-desktop" />
 					<NavLink className="navbar-item is-hidden-desktop" to="/perfil">Perfil</NavLink>
 					<hr className="dropdown-divider is-hidden-desktop" />
-				</div>
+				</div>}
 
 				<div className="navbar-end">
 					<div className="navbar-item">

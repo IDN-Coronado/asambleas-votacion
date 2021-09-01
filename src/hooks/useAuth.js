@@ -86,15 +86,15 @@ function useProvideAuth() {
 
   useEffect(() => {
     let unsubscribeUser, unsubscribeAuth;
+    unsubscribeAuth = firebase.auth().onAuthStateChanged((_user) => {
+      if (_user) {
+        setUserId(_user.uid);
+      } else {
+        setUserId(null);
+        setIsLoading(false);
+      }
+    });
     if (!prevUser) {
-      unsubscribeAuth = firebase.auth().onAuthStateChanged((_user) => {
-        if (_user) {
-          setUserId(_user.uid);
-        } else {
-          setUserId(null);
-          setIsLoading(false);
-        }
-      });
       if (userId) {
         unsubscribeUser = getRef('users')
           .doc(userId)
@@ -110,7 +110,7 @@ function useProvideAuth() {
     }
     // Cleanup subscription on unmount
     return () => {
-      unsubscribeAuth();
+      unsubscribeAuth && unsubscribeAuth();
       unsubscribeUser && unsubscribeUser();
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
