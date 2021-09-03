@@ -1,3 +1,11 @@
 .members-page {
   padding: 25px 0;
 }
+
+.actions-column .button {
+  margin-left: 10px;
+}
+
+.actions-column .button:first-child {
+  margin-left: 0;
+}
