@@ -38,7 +38,7 @@ function useProvideMember() {
   }
 
   const update = ({ id, ...data }) => {
-    const createMember = firebase.functions().httpsCallable('createMember');
+    const createMember = firebase.functions().httpsCallable('updateMember');
     return createMember({ id, data })
       .then(({ data }) => data.payload);
   }

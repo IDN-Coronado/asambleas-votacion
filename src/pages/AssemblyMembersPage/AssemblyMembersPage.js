@@ -54,14 +54,14 @@ const AssemblyMembersPage = () => {
       </div>
     </div>
     <div className="columns">
-      <div className="column">
-        <table className="table is-fullwidth">
+      <div className="column table-container">
+        <table className="table is-bordered is-striped is-hoverable is-fullwidth">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Link de votación</th>
-              <th>Voto</th>
-              <th>Enviar Mensaje</th>
+              <th className="has-text-centered">Nombre</th>
+              <th className="has-text-centered">Link de votación</th>
+              <th className="has-text-centered">Voto</th>
+              <th className="has-text-centered">Enviar Mensaje</th>
             </tr>
           </thead>
           <tbody>
@@ -82,8 +82,18 @@ const AssemblyMembersPage = () => {
                       <i className="fa fa-times-circle"></i>
                     </span>
                   }</td>
-                  <td>
-                    <button className="button" onClick={() => sendMessage(member)}>Enviar</button>
+                  <td className="has-text-centered">
+                    <a
+                      className="button is-success"
+                      target="_blank"
+                      rel="noreferrer"
+                      href={`https://wa.me/${member.phone}?text=Hola *${member.name}*! Ya es hora de votar, sigue este link para hacerlo: ${member.urls[assembly.id]}`}
+                    >
+                      <span className="icon is-small">
+                        <i className="fa fa-whatsapp"></i>
+                      </span>
+                      <span>Save</span>
+                    </a>
                   </td>
                 </tr>
               ))
