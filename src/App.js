@@ -110,9 +110,17 @@ function PrivateRoute({ children, ...rest }) {
         auth.isLoading ? (
           <Spinner />
         ) : 
-        auth.user ? (
-          children
-        ) : (
+        auth.user ? 
+          auth.user.church ? (
+            children
+          ) :
+            <Redirect
+              to={{
+                pathname: "/",
+                state: { from: location }
+              }}
+            />
+          : (
           <Redirect
             to={{
               pathname: "/acceso",

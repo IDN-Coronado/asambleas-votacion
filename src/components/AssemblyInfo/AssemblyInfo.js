@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const AssemblyInfo = ({ id, title, description, initialDate, endDate, onSaveInfo }) => {
   const [ isEditInfo, setIsEditInfo ] = useState(false);
   const [ info, setInfo ] = useState({title, description, initialDate, endDate});
+  
   const onInfoEditToggle = () =>
     setIsEditInfo(!isEditInfo);
 

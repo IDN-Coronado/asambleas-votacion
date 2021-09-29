@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useHistory, useLocation, Link } from 'react-router-dom';
 
 import { useAuth } from '../../hooks/useAuth';
-import { getCollection } from '../../lib/firestore';
 
 import errorMappings from '../../utils/errorMappings';
 
@@ -12,20 +11,11 @@ const SignUpPage = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [displayName, setdisplayName] = useState('');
-	const [churches, setChurches] = useState('');
-	const [church, setChurch] = useState(null);
 	const [passwordConfirmation, setPasswordConfirmation] = useState('');
 	const [confirmationError, setConfirmationError] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 	const auth = useAuth();
-
-	useEffect(() => {
-		getCollection('churches')
-			.then(data => {
-				setChurches(data);
-			})
-	}, [])
 
 	const { from } = location.state || { from: { pathname: "/" } };
 
@@ -49,25 +39,20 @@ const SignUpPage = () => {
 		setConfirmationError(passConfirmation !== password);
 	}
 
-	const onChurchChange = e => {
-		const church = e.currentTarget.value;
-		setChurch(church);
-	}
-
 	const clearForm = () => {
 		setEmail('');
 		setPassword('');
 	}
 
 	const validate = () => {
-		if (displayName && email && password && church) return true
+		if (displayName && email && password) return true
 		return false
 	}
 
 	const signup = () => {
 		if (!validate()) return;
 		setLoading(true);
-		auth.signup(displayName, email, password, church)
+		auth.signup(displayName, email, password)
 			.then(() => {
 				clearForm();
 				setLoading(false);
@@ -152,24 +137,6 @@ const SignUpPage = () => {
 							</div>
 						</div>
 					</div>
-					<div className="block">
-						<div className="field">
-							<label className="label">Iglesia</label>
-							<div className="control has-icons-left">
-								<div className={`select${church === 'no-church' ? ' is-danger' : ''}`}>
-									<select onChange={onChurchChange}>
-										<option value="no-church">Seleccione iglesia</option>
-										{churches && churches.map(church => (
-											<option key={church.id} value={church.id}>{church.name}</option>
-										))}
-									</select>
-								</div>
-								<span className="icon is-left">
-									<i className="fas fa-globe"></i>
-								</span>
-							</div>
-						</div>
-					</div>
 				</div>
 			</div>
 			<div className="columns">
@@ -178,7 +145,7 @@ const SignUpPage = () => {
 						<button
 							className={`button${loading ? ' is-loading' : ''}`}
 							onClick={signup}
-							{...(loading || confirmationError || (!church || church === 'no-church') ? { disabled: true } : {})}
+							{...(loading || confirmationError ? { disabled: true } : {})}
 						>Registrarse</button>
 					</div>
 					<div className="block">

@@ -50,7 +50,6 @@ function useProvideAuth() {
         return createUser({
           uid: user.uid,
           displayName,
-          church,
           email,
         })
       }
@@ -104,7 +103,7 @@ function useProvideAuth() {
           })
       }
     }
-    if (user && prevUser?.church !== user.church) {
+    if (user && user.church && prevUser?.church !== user.church) {
       getCollectionItem('churches', user.church)
         .then(_church => setChurch(_church))
     }
