@@ -21,6 +21,8 @@
 .options label {
   margin: 0 10px 10px 0;
   display: inline-block;
+  flex-grow: 1;
+  flex-basis: 0;
 }
 
 .options input[type="radio"]:checked + .button,
@@ -35,4 +37,15 @@
 
 .voting-page .options .button:last-child {
   margin-right: 0;
+}
+
+.voting-page .options .single-option {
+  width: 30%;
+  min-width: 210px;
+}
+
+.voting-page .options .image-wrapper {
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
 }

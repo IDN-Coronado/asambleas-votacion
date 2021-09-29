@@ -35,6 +35,27 @@
   width: 100%;
 }
 
+.ballot-sections .table td:first-child {
+  width: 50%;
+}
+
+.ballot-sections .table td:nth-child(2) {
+  width: 30%;
+}
+
+.ballot-sections .table td:last-child {
+  width: 20%;
+}
+
+.ballot-sections .option-image {
+  width: 30%;
+  margin-right: 15px;
+}
+
+.ballot-sections tfoot {
+  width: 100%;
+}
+
 .ballot-sections tfoot th {
   border: none;
 }
@@ -73,6 +94,14 @@
 }
 
 .vote-section.is-stale table .button {
+  display: none;
+}
+
+.vote-section.is-stale .file {
+  display: none;
+}
+
+.vote-section.is-stale .progress {
   display: none;
 }
 

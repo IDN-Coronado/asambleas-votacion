@@ -52,15 +52,19 @@ const Vote = ({ id, title, description, limit, options, onVoteUpdate }) => {
         }</p>
       </div>
       <div className="block options">{options.length === 1 ?
-        <div className="radio-option">
-          <label><input type="radio" name={id} value={options[0].id} onChange={onSectionVote} /><span className="button">Si</span></label>
-          <label><input type="radio" name={id} value="0" onChange={onSectionVote} /><span className="button">No</span></label>
-        </div> :
-        <div className="block options">
+        <>
+          {options[0].imageURL && <img className="single-option" src={options[0].imageURL} alt={options[0].title} />}
+          <div className="radio-option">
+            <label><input type="radio" name={id} value={options[0].id} onChange={onSectionVote} /><span className="button is-dark">Si</span></label>
+            <label><input type="radio" name={id} value="0" onChange={onSectionVote} /><span className="button is-dark">No</span></label>
+          </div>
+        </> :
+        <div className="block options is-flex is-flex-wrap-wrap">
           {options.map(option => (
-            <label key={option.id}>
+            <label key={option.id} className="is-flex is-flex-direction-column">
+              {option.imageURL && <div className="image-wrapper mb-2" style={{ backgroundImage: `url(${option.imageURL})`, minHeight: `${980 / options.length}px` }} />}
               <input type="checkbox" checked={selectedOptions.includes(option.id)} name={id} value={option.id} onChange={onSectionVote} />
-              <span className="button">{option.title}</span>
+              <span className="button is-dark">{option.title}</span>
             </label>
           ))}
         </div>}

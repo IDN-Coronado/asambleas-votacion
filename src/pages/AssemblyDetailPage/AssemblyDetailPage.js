@@ -130,7 +130,7 @@ const AssemblyDetailPage = () => {
                   </div>
                 </section>
                 <div className="panel-block">
-                  <button {...!isAssemblyUpdated ? {disabled: true} : ''} className="button is-fullwidth is-primary" onClick={onSaveAssembly}>Guardar nómina</button>
+                  <button {...!isAssemblyUpdated ? {disabled: true} : ''} className="button is-fullwidth is-primary" onClick={onSaveAssembly}>Guardar asamblea</button>
                 </div>
               </div>
             </div>
