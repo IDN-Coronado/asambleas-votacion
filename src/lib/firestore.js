@@ -2,7 +2,7 @@ import firebase from "firebase/app";
 
 let db;
 
-const getDb = () => {
+export const getDb = () => {
   if (!db) {
     db = firebase.firestore();
   }

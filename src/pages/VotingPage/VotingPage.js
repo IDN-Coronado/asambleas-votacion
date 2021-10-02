@@ -3,9 +3,15 @@ import { useParams } from "react-router";
 import firebase from "firebase/app";
 
 import Vote from "../../components/Vote/Vote";
+import Spinner from "../../components/Spinner/Spinner";
 
 import "./VotingPage.css";
-import Spinner from "../../components/Spinner/Spinner";
+
+const ERRORS = {
+  expired: 'expired',
+  upcoming: 'upcoming',
+  voted: 'voted',
+}
 
 const VotingPage = () => {
   const { assemblyId, memberId } = useParams();
@@ -40,9 +46,10 @@ const VotingPage = () => {
 
   const getErrorImage = () => {
     switch (pageError) {
-      case 'expired':
+      case ERRORS.expired:
         return 'empty'
-      case 'voted':
+      case ERRORS.voted:
+      case ERRORS.upcoming:
         return 'voted'
       default:
         return 'empty'
@@ -51,9 +58,11 @@ const VotingPage = () => {
 
   const getErrorMessage = () => {
     switch (pageError) {
-      case 'expired':
+      case ERRORS.expired:
         return 'Esta votación ya expiró.'
-      case 'voted':
+      case ERRORS.upcoming:
+        return 'Esta votación aún no ha comenzado.'
+      case ERRORS.voted:
         return 'Ya realizaste tu voto'
       default:
         return 'Ha ocurrido un error'
@@ -68,12 +77,16 @@ const VotingPage = () => {
         setIsLoading(false)
       })
       .catch(error => {
-        if (error.message === 'Assembly expired') {
-          setPageError('expired');
+        if (error.message === ERRORS.expired) {
+          setPageError(ERRORS.expired);
           setIsLoading(false)
         }
-        else if (error.message === 'User already voted') {
-          setPageError('voted');
+        if (error.message === ERRORS.upcoming) {
+          setPageError(ERRORS.upcoming);
+          setIsLoading(false)
+        }
+        else if (error.message === ERRORS.voted) {
+          setPageError(ERRORS.voted);
           setIsLoading(false)
         }
         else setPageError(error.message);
@@ -111,7 +124,7 @@ const VotingPage = () => {
               <p>Aprieta este botón cuando estés seguro que deseas finalizar la votación.</p>
               <p>Después de finalizar la votación no habrá opción de cambiarla de nuevo.</p>
             </div>
-            <div className="button is-large is-success" onClick={onToggleModal}>FINALIZAR VOTACIÓN</div>
+            <div className="button is-large is-danger" onClick={onToggleModal}>FINALIZAR VOTACIÓN</div>
           </div>
         </div>
       </div>

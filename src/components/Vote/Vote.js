@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 import usePrevious from "../../hooks/usePrevious";
+import VoteOption from "./VoteOption";
 
 const getLimit = (limit, options) => {
   switch (limit) {
@@ -24,19 +25,25 @@ const Vote = ({ id, title, description, limit, options, onVoteUpdate }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ selectedOptions ]);
 
-  const onSectionVote = e => {
-    const value = e.currentTarget.value !== '0' ? e.currentTarget.value : null;
+  const onSectionVote = (optionId, value) => {
     let _selectedOptions = [ ...selectedOptions ];
-    if (limit && limit > 1) {
-      if (selectedOptions.length >= limit + 1) {
-        _selectedOptions.shift();
-      }
-      _selectedOptions.push(value)
+    const isInList = selectedOptions.includes(optionId);
+    if (isInList) {
+      if (value) return;
+      _selectedOptions.splice(_selectedOptions.indexOf(optionId), 1);
     } else {
-      _selectedOptions = [ value ];
+      if (limit && limit > 1) {
+        if (_selectedOptions.length < limit + 1) {
+          _selectedOptions.push(optionId);
+        }
+      } else {
+        _selectedOptions = [ optionId ];
+      }
     }
     setSelectedOptions(_selectedOptions);
   }
+
+  const isDisabled = selectedOptions.length >= limit + 1;
   return <div className="message">
     <header className="message-header">
       <h4>{title}</h4>
@@ -53,20 +60,25 @@ const Vote = ({ id, title, description, limit, options, onVoteUpdate }) => {
       </div>
       <div className="block options">{options.length === 1 ?
         <>
-          {options[0].imageURL && <img className="single-option" src={options[0].imageURL} alt={options[0].title} />}
-          <div className="radio-option">
-            <label><input type="radio" name={id} value={options[0].id} onChange={onSectionVote} /><span className="button is-dark">Si</span></label>
-            <label><input type="radio" name={id} value="0" onChange={onSectionVote} /><span className="button is-dark">No</span></label>
-          </div>
+          <VoteOption
+            key={options[0].id}
+            option={options[0]}
+            totalOptions={options.length}
+            onOptionVote={onSectionVote}
+            selectedOptions={selectedOptions}
+            isSingleOption
+            isDisabled={isDisabled}
+          />
         </> :
         <div className="block options is-flex is-flex-wrap-wrap">
-          {options.map(option => (
-            <label key={option.id} className="is-flex is-flex-direction-column">
-              {option.imageURL && <div className="image-wrapper mb-2" style={{ backgroundImage: `url(${option.imageURL})`, minHeight: `${980 / options.length}px` }} />}
-              <input type="checkbox" checked={selectedOptions.includes(option.id)} name={id} value={option.id} onChange={onSectionVote} />
-              <span className="button is-dark">{option.title}</span>
-            </label>
-          ))}
+          {options.map(option => <VoteOption
+            key={option.id}
+            option={option}
+            totalOptions={options.length}
+            onOptionVote={onSectionVote}
+            selectedOptions={selectedOptions}
+            isDisabled={isDisabled}
+          />)}
         </div>}
       </div>
     </div>

@@ -1,6 +1,9 @@
 import { useState } from "react";
+import firebase from "firebase/app";
 
 import { Link } from 'react-router-dom';
+
+import dayjs from '../../lib/dayjs';
 
 const AssemblyInfo = ({ id, title, description, initialDate, endDate, onSaveInfo }) => {
   const [ isEditInfo, setIsEditInfo ] = useState(false);
@@ -18,6 +21,17 @@ const AssemblyInfo = ({ id, title, description, initialDate, endDate, onSaveInfo
     })
   }
 
+  const onDateChange = e => {
+    const el = e.currentTarget;
+    const type = el.dataset.type;
+    const date = new Date(el.value);
+    const timestamp = new firebase.firestore.Timestamp.fromDate(date);
+    setInfo({
+      ...info,
+      [type]: timestamp,
+    })
+  }
+
   const onInfoSave = () => {
     onInfoEditToggle();
     onSaveInfo(info);
@@ -28,7 +42,12 @@ const AssemblyInfo = ({ id, title, description, initialDate, endDate, onSaveInfo
     setInfo({title, description, initialDate, endDate, onSaveInfo});
   };
 
-
+  const startDate = info.initialDate.toDate();
+  const finalDate = info.endDate.toDate();
+  const startTime = dayjs(startDate).format('YYYY-MM-DDTHH:mm');
+  const formatedStartTime = dayjs(startDate).format('D MMMM YYYY, h:mmA');
+  const endTime = dayjs(finalDate).format('YYYY-MM-DDTHH:mm');
+  const formatedEndTime = dayjs(finalDate).format('D MMMM YYYY, h:mmA');
   return <>
   <div className="message">
     <header className="message-header assemblies-info-header">
@@ -97,7 +116,7 @@ const AssemblyInfo = ({ id, title, description, initialDate, endDate, onSaveInfo
           <div className="column is-6">
             {!isEditInfo && <div className="field">
               <p className="label">Fecha y hora inicial</p>
-              <p className="date assemblies-label">{initialDate}</p>
+              <p className="date assemblies-label">{formatedStartTime}</p>
             </div>}
             {isEditInfo && <div className="block">
               <div className="field is-grouped">
@@ -108,8 +127,8 @@ const AssemblyInfo = ({ id, title, description, initialDate, endDate, onSaveInfo
                     type="datetime-local"
                     placeholder="Fecha Inicial"
                     data-type="initialDate"
-                    value={info.initialDate}
-                    onChange={onInfoChange}
+                    value={startTime}
+                    onChange={onDateChange}
                   />
                 </div>
               </div>
@@ -118,7 +137,7 @@ const AssemblyInfo = ({ id, title, description, initialDate, endDate, onSaveInfo
           <div className="column is-6">
             {!isEditInfo && <div className="field">
               <p className="label">Fecha y hora final</p>
-              <p className="date assemblies-label">{endDate}</p>
+              <p className="date assemblies-label">{formatedEndTime}</p>
             </div>}
             {isEditInfo && <div className="block">
               <div className="field is-grouped">
@@ -129,8 +148,8 @@ const AssemblyInfo = ({ id, title, description, initialDate, endDate, onSaveInfo
                     type="datetime-local"
                     placeholder="Fecha Final"
                     data-type="endDate"
-                    value={info.endDate}
-                    onChange={onInfoChange}
+                    value={endTime}
+                    onChange={onDateChange}
                   />
                 </div>
               </div>

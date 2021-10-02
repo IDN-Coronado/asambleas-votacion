@@ -1,5 +1,5 @@
 import { useState } from "react";
-import firebase from "firebase";
+import firebase from "firebase/app";
 
 import uid from "../../utils/uid";
 
@@ -10,13 +10,21 @@ const getOptionTemplate = () => ({
   options: []
 })
 
+const getInitialProgressState = options => {
+  const progressState = {};
+  for (let i = 0; i < options.length; i++) {
+    progressState[options[i].id] = { progress: 0 };
+  }
+  return progressState;
+}
+
 const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => {
   const { onVoteSave, onVoteDelete, onVoteCancel, index } = rest;
   const [ isDropdownActive, setIsDropdownActive ] = useState(false);
   const [ section, setSection ] = useState(!isNew ? { title, description, limit, options } : getOptionTemplate());
   const [ isEditing, setIsEditing ] = useState(isNew);
   const [ isConfirmDeleteActive, setIsConfirmDeleteActive ] = useState(false);
-  const [ progress, setUploadProgress ] = useState(0);
+  const [ progress, setUploadProgress ] = useState(getInitialProgressState(options));
 
   const onDropdownToggle = () =>
     setIsDropdownActive(!isDropdownActive);
@@ -101,7 +109,12 @@ const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => 
     task.on('state_changed',
       snapshot => {
         const uploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setUploadProgress(uploadProgress)
+        setUploadProgress({
+          ...progress,
+          [optionId]: {
+            progress: uploadProgress,
+          },
+        })
       },
       err => console.log(err),
       () => {
@@ -244,7 +257,7 @@ const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => 
                             </span>
                           </label>
                         </div>
-                        <progress class="progress mt-3" value={progress} max="100">{`${progress}%`}</progress>
+                        <progress className="progress mt-3" value={progress[option.id].progress} max="100">{`${progress[option.id].progress}%`}</progress>
                       </td>
                       <td>
                         {<div className="control">
