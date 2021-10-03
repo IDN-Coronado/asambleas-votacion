@@ -72,9 +72,9 @@ const ResultsPage = () => {
               <div className="message-body">
                 {section.options.length > 1
                   ? <div>
-                      <div className="level">
+                      <div className="level is-flex is-flex-wrap-wrap">
                         {section.options.map(option => (
-                          <div className="level-item has-text-centered" key={option.id}>
+                          <div className="results-section-option level-item has-text-centered mr-5 mb-5 p-3" key={option.id}>
                             <div>
                               <p className="heading">{option.title}</p>
                               <p className="title is-5">{option.votes.length}</p>

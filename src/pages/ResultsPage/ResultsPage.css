@@ -6,3 +6,7 @@
   padding: 50px 0;
   background: rgba(0, 224, 191, 30%);
 }
+
+.results-section-option {
+  border: 1px solid #ddd;
+}
