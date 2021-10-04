@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useHistory } from "react-router-dom";
+import firebase from "firebase/app";
 
 import { useAssembly } from '../../hooks/useAssembly';
+import dayjs from '../../lib/dayjs';
 
 import AssemblyTile from '../../components/AssemblyTile/AssemblyTile';
 import Spinner from '../../components/Spinner/Spinner';
@@ -16,8 +18,8 @@ const AssembliesPage = () => {
   const [ isLoading, setIsLoading ] = useState(false);
   const [ title, setTitle ] = useState('');
   const [ description, setDescription ] = useState('');
-  const [ initialDate, setInitialDate ] = useState('');
-  const [ endDate, setEndDate ] = useState('');
+  const [ initialDate, setInitialDate ] = useState(new firebase.firestore.Timestamp.fromDate(new Date()));
+  const [ endDate, setEndDate ] = useState(new firebase.firestore.Timestamp.fromDate(new Date()));
 
   const onToggleCreateModal = () =>
     setIsCreateModalActive(!isCreateModalActive);
@@ -57,12 +59,16 @@ const AssembliesPage = () => {
 
   const onInitialDateChange = e => {
     const _initialDate = e.currentTarget.value;
-    setInitialDate(_initialDate);
+    const date = new Date(_initialDate);
+    const timestamp = new firebase.firestore.Timestamp.fromDate(date);
+    setInitialDate(timestamp);
   }
 
   const onEndDateChange = e => {
     const _endDate = e.currentTarget.value;
-    setEndDate(_endDate);
+    const date = new Date(_endDate);
+    const timestamp = new firebase.firestore.Timestamp.fromDate(date);
+    setEndDate(timestamp);
   }
 
   const renderTiles = () => (
@@ -74,6 +80,11 @@ const AssembliesPage = () => {
       />
     ))
   )
+
+  const startDate = initialDate.toDate();
+  const finalDate = endDate.toDate();
+  const startTime = dayjs(startDate).format('YYYY-MM-DDTHH:mm');
+  const endTime = dayjs(finalDate).format('YYYY-MM-DDTHH:mm');
 
   return <>
     {isLoading && <Spinner screen />}
@@ -140,7 +151,7 @@ const AssembliesPage = () => {
                         className="input"
                         type="datetime-local"
                         placeholder="Fecha Inicial"
-                        value={initialDate}
+                        value={startTime}
                         onChange={onInitialDateChange}
                       />
                     </div>
@@ -154,7 +165,7 @@ const AssembliesPage = () => {
                         className="input"
                         type="datetime-local"
                         placeholder="Fecha Final"
-                        value={endDate}
+                        value={endTime}
                         onChange={onEndDateChange}
                       />
                     </div>

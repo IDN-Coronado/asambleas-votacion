@@ -24,7 +24,7 @@ const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => 
   const [ section, setSection ] = useState(!isNew ? { title, description, limit, options } : getOptionTemplate());
   const [ isEditing, setIsEditing ] = useState(isNew);
   const [ isConfirmDeleteActive, setIsConfirmDeleteActive ] = useState(false);
-  const [ progress, setUploadProgress ] = useState(getInitialProgressState(options));
+  const [ progress, setUploadProgress ] = useState(getInitialProgressState(options || []));
 
   const onDropdownToggle = () =>
     setIsDropdownActive(!isDropdownActive);
@@ -57,8 +57,15 @@ const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => 
       : null
     
     };
-    newSection.options = (section.options || []).concat({ id: uid(), title: '', votes: [] });
+    const optionId = uid();
+    newSection.options = (section.options || []).concat({ id: optionId, title: '', votes: [] });
     setSection(newSection);
+    setUploadProgress({
+      ...progress,
+      [optionId]: {
+        progress: 0,
+      },
+    })
   }
 
   const onOptionDelete = optionIndex => {
@@ -122,7 +129,6 @@ const VoteSection = ({ title, description, limit, options, isNew, ...rest }) => 
         section.options[index].imageURL = downloadURL;
         setSection({
           ...section,
-          options,
         })
         })
       }
