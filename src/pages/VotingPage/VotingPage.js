@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import firebase from "firebase/app";
-import { Helmet } from 'react-helmet';
 
 import Vote from "../../components/Vote/Vote";
 import Spinner from "../../components/Spinner/Spinner";
@@ -96,13 +95,6 @@ const VotingPage = () => {
   }, [assemblyId, memberId]);
 
   return <div className={`voting-page${pageError ? ' has-background' : ''}`}>
-    <Helmet>
-      <title>{`Asambleas Online | ${pageData?.assembly?.title}`}</title>
-      <meta
-        name="description"
-        content={`Hola ${pageData?.member?.name}, ${pageError ? getErrorMessage() : 'realiza tu voto en línea.'}`}
-      />
-    </Helmet>
     {isLoading ? <Spinner { ...isLoadingScreen ? { screen: true } : {}} /> : !pageError ?
       <div className="container">
         <div className="columns">
