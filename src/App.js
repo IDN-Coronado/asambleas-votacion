@@ -6,6 +6,7 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
+import { Helmet } from 'react-helmet';
 
 import { ProvideAuth, useAuth } from './hooks/useAuth';
 import { ProvideAssembly } from './hooks/useAssembly';
@@ -30,6 +31,13 @@ import './App.css';
 export default function App() {
   return (
     <ProvideAuth>
+      <Helmet>
+        <title>Asambleas Online</title>
+        <meta
+          name="description"
+          content="Maneja las asambleas de tu iglesia local desde un solo lugar"
+        />
+      </Helmet>
       <Router>
         <div>
           <Nav />
