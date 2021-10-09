@@ -48,4 +48,5 @@
   cursor: pointer;
   background-size: cover;
   background-position: center;
+  min-height: 250px;
 }

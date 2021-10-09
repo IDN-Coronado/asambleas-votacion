@@ -14,6 +14,7 @@ const AssemblyMembersPage = () => {
   const history = useHistory();
 
   const [ assembly, setAssembly ] = useState({});
+  const [ waMessage, setWaMessage ] = useState(`Hola *{nombre}*! Ya es hora de elegir, sigue este link para realizar tu voto: {link}.`);
 
   const getVotedStatus = memberId => assembly.votes.includes(memberId);
 
@@ -23,7 +24,12 @@ const AssemblyMembersPage = () => {
   const getMemberVotingUrl = member => {
     const localUrl = `${window.location.protocol}//${window.location.host}/${`votacion/${assembly.id}/${member.id}`}`;
     return member.urls ? member.urls[assembly.id] ? member.urls[assembly.id] : localUrl : localUrl;
-      
+  }
+
+  const generateMessage = (message, member) => {
+    let newMessage = message.replace('{nombre}', member.name.trim());
+    newMessage = newMessage.replace('{link}', member.urls[assembly.id])
+    return newMessage;
   }
 
   const sendMessage = member => {
@@ -31,8 +37,12 @@ const AssemblyMembersPage = () => {
     sendSMSMessage({
       assemblyId: assembly.id,
       memberId: member.id,
-      message: `Hola *${member.name}*. Ya puedes realizar tu voto haciendo click aquí: ${member.urls[assembly.id]}`
+      message: generateMessage(waMessage, member)
     })
+  }
+
+  const handleMessageChange = e => {
+    setWaMessage(e.currentTarget.value);
   }
 
   useEffect(() => {
@@ -51,6 +61,17 @@ const AssemblyMembersPage = () => {
             <span>Volver a la asamblea</span>
           </button>
         </div>
+      </div>
+    </div>
+    <div className="columns">
+      <div className="column">
+      <div className="field">
+        <label className="label">Mensaje de whatsapp</label>
+        <div className="control">
+          <input className="input" value={waMessage} type="text" onChange={handleMessageChange} />
+        </div>
+        <p className="help">{`Use {nombre} para el nombre de la persona y {link} para el link de la asamblea.`}</p>
+      </div>
       </div>
     </div>
     <div className="columns">
@@ -87,7 +108,7 @@ const AssemblyMembersPage = () => {
                       className="button is-success"
                       target="_blank"
                       rel="noreferrer"
-                      href={`https://wa.me/${member.phone}?text=Hola *${member.name}*! Ya es hora de votar, sigue este link para hacerlo: ${member.urls[assembly.id]}`}
+                      href={`https://wa.me/${member.phone}?text=${generateMessage(waMessage, member)}`}
                     >
                       <span className="icon is-small">
                         <i className="fa fa-whatsapp"></i>

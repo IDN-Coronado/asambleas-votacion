@@ -32,7 +32,7 @@ const Vote = ({ id, title, description, limit, options, onVoteUpdate }) => {
       if (value) return;
       _selectedOptions.splice(_selectedOptions.indexOf(optionId), 1);
     } else {
-      if (limit && limit > 1) {
+      if (limit && limit >= 1) {
         if (_selectedOptions.length < limit + 1) {
           _selectedOptions.push(optionId);
         }
